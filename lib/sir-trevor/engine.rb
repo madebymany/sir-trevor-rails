@@ -6,8 +6,8 @@ module SirTrevor
     require 'twitter-text'
     require 'carrierwave'
 
-    initializer "sedit.load_app_instance_data" do |app|
-      Sedit.setup do |config|
+    initializer "sirtrevor.load_app_instance_data" do |app|
+      SirTrevor.setup do |config|
         config.app_root = app.root
       end
     end

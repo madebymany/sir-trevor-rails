@@ -6,7 +6,7 @@ body { margin: 0; font-size: 1em; line-height: 1.4; }
 }
 /* Typography reset */
 .sir-trevor { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-.sir-trevor , .sir-trevor button, .sir-trevor input, .sir-trevor select, .sir-trevor textarea { font-family: "Helvetica Neue", 'Arial', sans-serif; color: #222; }
+.sir-trevor , .sir-trevor button, .sir-trevor input, .sir-trevor select, .sir-trevor textarea, .sir-trevor blockquote { font-family: "Helvetica Neue", 'Arial', sans-serif; color: #222; }
 /* Generics */
 .sir-trevor .hidden { display: none !important; visibility: hidden; }
 
@@ -16,6 +16,13 @@ body { margin: 0; font-size: 1em; line-height: 1.4; }
   top: 50%; left: 50%;
   margin-top: 65px;
   margin-left: -25px;
+}
+
+.sir-trevor * {
+  -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+         -ms-box-sizing: border-box;
+             box-sizing: border-box;
 }
 
 /* Formatting Control Bar */
@@ -31,7 +38,7 @@ body { margin: 0; font-size: 1em; line-height: 1.4; }
   z-index: 102;
   display: box;
   box-sizing: border-box;
-  margin: -18px 0 0 0;
+  margin: -32px 0 0 0;
   top: 0;
 }
 
@@ -77,6 +84,7 @@ body { margin: 0; font-size: 1em; line-height: 1.4; }
   font-weight: bold;
   margin: 0;
   padding: 0 16px 0 0;
+  color: #9B8816;
 }
 
 .sir-trevor .sir-trevor-marker .buttons {
@@ -89,10 +97,11 @@ body { margin: 0; font-size: 1em; line-height: 1.4; }
   margin: 0;
   border-left: 1px dotted #DAC962;
   color: #AF9B24;
-  height: 13px;
+  height: 45px;
   font-size: 9px;
   display: inline-block;
   text-decoration: none;
+  
 }
 
 .sir-trevor .sir-trevor-marker .buttons a:last-child {
@@ -263,6 +272,8 @@ body { margin: 0; font-size: 1em; line-height: 1.4; }
 
 .sir-trevor .sir-trevor-block blockquote {
   padding: 5px; margin: 0;
+  font-size: 14px;
+  font-style: none;
 }
 
 /* Tweet block */

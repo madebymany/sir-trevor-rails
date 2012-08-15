@@ -1026,8 +1026,14 @@
   _.mixin({
     isURI : function(string) {
       return (url_regex.test(string));
+    },
+    
+    capitalize : function(string) {
+      return string.charAt(0).toUpperCase() + string.substring(1).toLowerCase();
     }
   });
+  
+  
   /*
     Generic Block Type Implementation
     --
@@ -1148,6 +1154,7 @@
             'class': 'error-marker',
             'html': '!'
           }));
+          errors++;
         } 
       }, this));
       
@@ -1382,7 +1389,7 @@
     },
     
     onBlockFocus: function(ev) {
-      this.instance.formatBar.show(this.$el);
+      this.instance.formatBar.show(this.$block);
     },
     
     onDeleteClick: function(ev) {
@@ -1571,7 +1578,7 @@
     
   });
   
-  SirTrevor.BlockTypes.BlockQuote = new BlockQuote();
+  SirTrevor.BlockTypes.Quote = new BlockQuote();
   /*
     Gallery
   */
@@ -1604,7 +1611,7 @@
     renderGalleryThumb: function(item) {
       
       var img = $("<img>", {
-        src: item.data.raw
+        src: item.data.file.thumb.url
       });
       
       var list = $('<li>', {
@@ -1729,7 +1736,7 @@
       this.loading();
       this.$dropzone.hide();
       this.$el.html($('<img>', {
-        src: data.raw
+        src: data.file.url
       }));
       this.$el.show();
       this.ready();
@@ -1834,7 +1841,7 @@
     }
   });
   
-  SirTrevor.BlockTypes.UnorderedList = new UnorderedList();
+  SirTrevor.BlockTypes.Ul = new UnorderedList();
   /* Default Formatters */
   /* Our base formatters */
   
@@ -2121,8 +2128,9 @@
     
     /* Convienience methods */
     show: function(relativeEl){ 
+      console.log(relativeEl.position().top, relativeEl.offset().top);
       this.$el.css({
-        top: relativeEl.offset().top - (parseInt(this.$el.height()))
+        top: relativeEl.position().top
       });
       this.$el.show();
       this.$el.addClass('sir-trevor-item-ready'); 
@@ -2222,6 +2230,9 @@
       We also have to remember to store static counts for how many blocks we have, and keep a nice array of all the blocks available.
     */
     createBlock: function(type, data) {
+      
+      type = _.capitalize(type); // Proper case
+      
       if (this._blockTypeAvailable(type)) {
         
        var blockType = SirTrevor.BlockTypes[type],
@@ -2310,7 +2321,7 @@
   
       // Empty or JSON-ify
       this.$el.val((this.options.blockStore.data.length === 0) ? '' : this.to_json());
-      return false;
+      return errors;
     },
     
     /*
@@ -2399,7 +2410,7 @@
     */
     _setBlocksAndFormatters: function() {
       this.blockTypes = flattern((_.isUndefined(this.options.blockTypes)) ? SirTrevor.BlockTypes : this.options.blockTypes);
-      this.formatters = flattern((_.isUndefined(this.options.formatters)) ? SirTrevor.Formatters : this.options.formatters);
+      this.formatters = flattern((_.isUndefined(this.options.formatters)) ? SirTrevor.Formatters : this.options.formatters);    
     },
     
     /*
@@ -2503,13 +2514,15 @@
   };
   
   SirTrevor.onFormSubmit = function(ev) {
-    ev.preventDefault();
-    ev.stopPropagation();
     // Loop through all of our instances and do our form submits on them
+    var errors = 0;
     _.each(SirTrevor.instances, function(inst, i) {
-      inst.onFormSubmit();
+      errors += inst.onFormSubmit();
     });
-    return false;
+    
+    if(errors > 0) {
+      ev.preventDefault();
+    } 
   };
 
 }(jQuery, _));

@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency "jquery-rails"
 
   s.add_dependency "redcarpet", "~> 2.0.1"
-  s.add_dependency "carrierwave", "~> 0.5.8"
+  s.add_dependency "carrierwave", "~> 0.6.2"
   s.add_dependency "mini_magick", "~> 3.3"
   s.add_dependency 'twitter-text', '~> 1.4'
 

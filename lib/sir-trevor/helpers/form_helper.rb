@@ -15,7 +15,7 @@ module SirTrevor
 
         options = { :language => I18n.locale.to_s }.merge(options)
         input_html = (options.delete(:input_html) || {})
-        input_html['class'] = "sir-trevor"
+        input_html['class'] = "sir-trevor-area visuallyhidden"
         input_html['id'] = element_id
         hash = input_html.stringify_keys
 
@@ -24,15 +24,6 @@ module SirTrevor
         
         output_buffer = ActiveSupport::SafeBuffer.new
         output_buffer << instance_tag.to_text_area_tag(input_html)
-        
-        js_content_for_section = options.delete(:js_content_for)
-        js = "var editor = new SirTrevor.Editor({ el: $('##{element_id}') }).init();"
-
-        if js_content_for_section
-          content_for(js_content_for_section) { js.html_safe }
-        else
-          output_buffer << javascript_tag(js)
-        end
         
         output_buffer
 
