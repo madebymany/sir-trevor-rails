@@ -4,7 +4,6 @@ module SirTrevor
 
     require 'redcarpet'
     require 'twitter-text'
-    require 'carrierwave'
 
     initializer "sirtrevor.load_app_instance_data" do |app|
       SirTrevor.setup do |config|
@@ -23,11 +22,6 @@ module SirTrevor
         ActionView::Helpers::FormBuilder.send :include, SirTrevor::Helpers::FormBuilder
       end
     end
-
-    config.image_sizes = {
-      post: [580, 326],
-      thumbnail: [80, 45]
-    }
   end
 
   def self.config(&block)

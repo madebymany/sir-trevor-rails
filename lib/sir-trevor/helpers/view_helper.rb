@@ -5,7 +5,7 @@ module SirTrevor
       extend ActiveSupport::Concern
       include Twitter::Autolink
   
-      def render_sir_trevor(json, image_type = "post", dimensions = { width: "624", height: "351" })
+      def render_sir_trevor(json, image_type = "large", dimensions = { width: "624", height: "351" })
         hash = JSON.parse(json)
 
         extension = @mobile_device ? :mobile : :html

@@ -1,5 +1,3 @@
-require 'securerandom'
-
 module SirTrevor
   module Helpers
     module FormHelper
@@ -11,12 +9,9 @@ module SirTrevor
       
       def sir_trevor_text_area(object_name, method, options = {})
 
-        element_id = "sir-trevor_#{ SecureRandom.hex(16) }"
-
         options = { :language => I18n.locale.to_s }.merge(options)
         input_html = (options.delete(:input_html) || {})
         input_html['class'] = "sir-trevor-area visuallyhidden"
-        input_html['id'] = element_id
         hash = input_html.stringify_keys
 
         instance_tag = ActionView::Base::InstanceTag.new(object_name, method, self, options.delete(:object))

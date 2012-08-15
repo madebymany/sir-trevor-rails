@@ -4,8 +4,6 @@ module SirTrevor
 
 	mattr_accessor :app_root
 
-	autoload :ImageSizes, 'sir-trevor/image_sizes'
-
   module Helpers
     autoload :ViewHelper, 'sir-trevor/helpers/view_helper'
     autoload :FormHelper, 'sir-trevor/helpers/form_helper'
