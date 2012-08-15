@@ -1,0 +1,4 @@
+<div class="sedit_block blockquote_block">
+	<%= markdown(block["text"]) %>
+	<%= "<cite class=\"quote\">&ndash; #{block["cite"]}</cite>".html_safe unless block["cite"].nil? %>
+</div>

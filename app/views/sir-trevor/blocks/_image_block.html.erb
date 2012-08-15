@@ -1,0 +1,15 @@
+<figure class="sedit_block image_block">
+
+  <% 
+    image_url =
+       if block['file'].present? && block['file'][image_type].present? && block['file'][image_type]['url'].present?
+         block["file"][image_type]['url']
+       else
+         Sedit::ImageSizes::General.placeholder_for(image_type)
+       end
+  %>
+
+  <%= image_tag image_url, :alt => block['description'], :class => image_type %>
+  <figcaption><%= block['caption'] %> <% unless block['credit'].blank? %><cite>Credit: <%= block['credit'] %></cite><% end %></figcaption>
+
+</figure>
