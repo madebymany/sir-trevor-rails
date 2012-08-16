@@ -1087,7 +1087,6 @@
     beforeBlockRender: function(){},
     onBlockActivated: function(){},
     onDrop: function(transferData){},
-    onContentPasted: function(ev){},
     toMarkdown: function(markdown){ return markdown; },
     toHTML: function(html){ return html; },
       
@@ -1159,6 +1158,16 @@
       }, this));
       
       return (errors === 0);
+    },
+    
+    /*
+      Generic onContentPasted that strips ALL HTML other than stuff we like from the block
+    */
+    onContentPasted: function(ev){
+      var textBlock = this.$('.text-block');
+      if (textBlock.length > 0) {
+        textBlock.html(this.instance._toHTML(this.instance._toMarkdown(textBlock.html(), this.type)));
+      }
     },
     
     /* Helper / convienience methods */
@@ -1234,7 +1243,7 @@
       if (this.blockType.dropEnabled) {
         this.$dropzone = $("<div>", {
           html: this.blockType.dropzoneHTML,
-          class: "dropzone"
+          class: "dropzone " + this.blockType.className + '-block'
         });
         this.$block.append(this.$dropzone);
         this.$el.hide();
@@ -1287,6 +1296,9 @@
         
         // Bind our text block to show the format bar
         block.find('.text-block').focus(this.onBlockFocus);
+        
+        // Strip out all the HTML on paste
+        block.find('.text-block').bind('paste', this.onContentPasted);
       }
       
       if (this.blockType.dropEnabled) {
@@ -1610,6 +1622,8 @@
     
     renderGalleryThumb: function(item) {
       
+      if(_.isUndefined(item.data.file)) return false;
+      
       var img = $("<img>", {
         src: item.data.file.thumb.url
       });
@@ -1720,7 +1734,7 @@
     Simple Image Block
   */
   
-  var dropzone_templ = "<p>Drop image here</p><div class=\"input submit\"><input type=\"file\" /></div>";
+  var dropzone_templ = "<p>Drop image here</p><div class=\"input submit\"><input type=\"file\" /></div><button>...or choose a file</button>";
   
   
   var ImageBlock = SirTrevor.BlockType.extend({ 
@@ -1744,6 +1758,7 @@
     
     onBlockRender: function(){
       /* Setup the upload button */
+      this.$dropzone.find('button').bind('click', halt);
       this.$dropzone.find('input').on('change', _.bind(function(ev){
         this._super("onDrop", ev.currentTarget);
       }, this));
@@ -1780,12 +1795,12 @@
     Text Block
   */
   
-  var tb_template = '<div class="required <%= className %>" contenteditable="true"></div>';
+  var tb_template = '<div class="required text-block" contenteditable="true"></div>';
   
   var TextBlock = SirTrevor.BlockType.extend({ 
     
     title: "Text",
-    className: "text-block",
+    className: "text",
     
     editorHTML: function() {
       return _.template(tb_template, this);
@@ -1797,6 +1812,94 @@
   });
   
   SirTrevor.BlockTypes.Text = new TextBlock();
+  
+  var t_template = '<p>Drop tweet link here</p><div class="input text"><label>or paste URL:</label><input type="text" class="paste-block"></div>';
+  var tweet_template = '<div class="tweet media"><div class="img"><img src="<%= user.profile_image_url %>" class="tweet-avatar"></div><div class="bd tweet-body"><p><a href="http://twitter.com/#!/<%= user.screen_name %>">@<%= user.screen_name %></a>: <%= text %></p><time><%= created_at %></time></div></div>';
+  
+  var Tweet = SirTrevor.BlockType.extend({ 
+    
+    title: "Tweet",
+    className: "tweet",
+    dropEnabled: true,
+    
+    dropzoneHTML: t_template,
+    
+    loadData: function(data){
+      this.$block.find(".dropzone").hide();
+      this.$el.show();
+      this.$el.html(_.template(tweet_template, data));
+    },
+    
+    onContentPasted: function(event){
+      // Content pasted. Delegate to the drop parse method
+      var input = $(event.target),
+          val = input.val();
+      
+      // Pass this to the same handler as onDrop
+      this._super("handleTwitterDropPaste", val);
+    },
+    
+    handleTwitterDropPaste: function(url){
+      
+      if(_.isURI(url)) 
+      {
+        if (url.indexOf("twitter") != -1 && url.indexOf("status") != -1) {
+          // Twitter status
+          var tweetID = url.match(/[^\/]+$/);
+          if (!_.isEmpty(tweetID)) {
+            
+            this.loading();
+            
+            tweetID = tweetID[0];
+            
+            var tweetCallbackSuccess = function(data) {
+              // Parse the twitter object into something a bit slimmer..
+              var obj = {
+                user: {
+                  profile_image_url: data.user.profile_image_url,
+                  profile_image_url_https: data.user.profile_image_url_https,
+                  screen_name: data.user.screen_name,
+                  name: data.user.name
+                },
+                text: data.text,
+                created_at: data.created_at,
+                status_url: url
+              };
+              
+              // Save this data on the block
+              var dataStruct = this.$el.data('block');
+              dataStruct.data = obj;
+              this.$el.html(_.template(tweet_template, obj)); // Render
+              this.$dropzone.hide();
+              this.$el.show();
+              
+              this.ready();
+            };
+  
+            var tweetCallbackFail = function(){
+              this.ready();
+            };
+            
+            // Make our AJAX call
+            $.ajax({
+              url: "http://api.twitter.com/1/statuses/show/" + tweetID + ".json",
+              dataType: "JSONP",
+              success: _.bind(tweetCallbackSuccess, this),
+              error: _.bind(tweetCallbackFail, this)
+            });
+          }
+        }
+      }
+      
+    },
+  
+    onDrop: function(transferData){
+      var url = transferData.getData('text/plain');
+      this._super("handleTwitterDropPaste", url);
+    }
+  });
+  
+  SirTrevor.BlockTypes.Tweet = new Tweet();
   /*
     Unordered List
   */
@@ -1806,7 +1909,7 @@
   UnorderedList = SirTrevor.BlockType.extend({ 
     
     title: "List",
-    className: "unordered-list",
+    className: "list",
     
     editorHTML: function() {
       return _.template(template, this);
@@ -2124,19 +2227,29 @@
       this.$el.hide();
       this.$el.bind('mouseout', halt);
       this.$el.bind('mouseover', halt);
+      
+      this.instance.$wrapper.bind('click', this.onWrapperClick);
     },
     
     /* Convienience methods */
-    show: function(relativeEl){ 
-      console.log(relativeEl.position().top, relativeEl.offset().top);
+    show: function(relativeEl){
       this.$el.css({
         top: relativeEl.position().top
       });
       this.$el.show();
       this.$el.addClass('sir-trevor-item-ready'); 
     },
+    
+    onWrapperClick: function(ev){
+      var item = $(ev.target),
+          parent = item.parent();
+          
+      if(!(item.hasClass(this.className) || parent.hasClass(this.className) || item.hasClass('text-block') || parent.hasClass('text-block'))) {
+        this.hide();
+      }
+    },
   
-    hide: function(relativeEl){ 
+    hide: function(){ 
       this.$el.hide();
       this.$el.removeClass('sir-trevor-item-ready'); 
     },
