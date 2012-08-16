@@ -1,13 +1,3 @@
 <figure class="content-block image-block">
-
-  <% 
-    image_url =
-       if block['file'].present? && block['file'][image_type].present? && block['file'][image_type]['url'].present?
-         block["file"][image_type]['url']
-       end
-  %>
-
-  <%= image_tag image_url, :alt => block['description'], :class => image_type %>
-  <figcaption><%= block['caption'] %> <% unless block['credit'].blank? %><cite>Credit: <%= block['credit'] %></cite><% end %></figcaption>
-
+  <%= sir_trevor_image_tag(block, image_type) %>
 </figure>

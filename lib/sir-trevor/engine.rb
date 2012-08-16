@@ -5,17 +5,13 @@ module SirTrevor
     require 'redcarpet'
     require 'twitter-text'
 
-    initializer "sirtrevor.load_app_instance_data" do |app|
+    initializer "sir_trevor.load_app_instance_data" do |app|
       SirTrevor.setup do |config|
         config.app_root = app.root
       end
     end
 
-    initializer "sirtrevor.load_static_assets" do |app|
-      app.middleware.use ::ActionDispatch::Static, "#{root}/public"
-    end
-
-    initializer "sirtrevor.helpers" do
+    initializer "sir_trevor.helpers" do
       ActiveSupport.on_load :action_view do
         ActionView::Base.send :include, SirTrevor::Helpers::ViewHelper
         ActionView::Base.send :include, SirTrevor::Helpers::FormHelper
