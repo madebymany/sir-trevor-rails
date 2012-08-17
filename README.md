@@ -67,6 +67,22 @@ To render your content (in your view file)
 <%= render_sir_trevor(post.content) %>
 ```
 
+# Generators
+
+## Views
+
+To grab all of the default block type partials into your application run the following generator command:
+
+```bash
+rails g sir_trevor:views
+```
+
+This will copy all of the SirTrevor block partials into `app/views/sir-trevor/blocks/`
+
+# Handling image uploads
+
+We don't provide a default image uploader out of the box, because everyone will have different requirements. To see an example of an image uploader, please refer to our Rails examples in the [Sir Trevor JS repository](http://github.com/madebymany/sir-trevor-js/tree/master/examples/rails/). 
+
 # Helper methods
 
 **`render_sir_trevor`**
