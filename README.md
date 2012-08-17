@@ -67,6 +67,24 @@ To render your content (in your view file)
 <%= render_sir_trevor(post.content) %>
 ```
 
+# Helper methods
+
+## `render_sir_trevor`
+
+Parses the blocks JSON content, loops through each piece of block content and render the appropriate partial for the block. 
+
+## `pluck_sir_trevor_type`
+
+Get the first instance of a specified SirTrevor block type from the supplied JSON
+
+## `render_sir_trevor_image`
+
+Returns the first available SirTrevor image from the supplied JSON.
+
+## `sir_trevor_image_tag`
+
+Returns an image tag from a SirTrevor Image block
+
 # Requirements
 
 - Rails 3.x  
