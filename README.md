@@ -81,7 +81,7 @@ This will copy all of the SirTrevor block partials into `app/views/sir-trevor/bl
 
 # Handling image uploads
 
-We don't provide a default image uploader out of the box, because everyone will have different requirements. To see an example of an image uploader, please refer to our Rails examples in the [Sir Trevor JS repository](http://github.com/madebymany/sir-trevor-js/tree/master/examples/rails/). 
+We don't provide a default image uploader out of the box, because everyone will have different requirements. To see an example of an image uploader, please refer to our Rails examples in the [Sir Trevor JS repository](https://github.com/madebymany/sir-trevor-js/tree/master/examples/rails/image-uploader). 
 
 # Helper methods
 
