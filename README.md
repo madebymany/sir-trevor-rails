@@ -67,6 +67,8 @@ To render your content (in your view file)
 <%= render_sir_trevor(post.content) %>
 ```
 
+There's an example Rails 3.2.7 project with all of this already done in the [Sir Trevor JS repository](https://github.com/madebymany/sir-trevor-js/tree/master/examples/rails/sir-trevor-example).
+
 # Generators
 
 ## Views
