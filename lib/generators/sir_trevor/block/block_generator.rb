@@ -16,10 +16,10 @@ module SirTrevor
         # Copy the JS
         copy_file "_block.js", "app/assets/javascripts/sir-trevor/blocks/#{name}.js"
         
-        gsub_file "app/assets/javascripts/sedit/blocks/#{name}.js", /var Name/, "var #{name.capitalize}"
-        gsub_file "app/assets/javascripts/sedit/blocks/#{name}.js", /title: ''/, "title: '#{name.capitalize}'"
-        gsub_file "app/assets/javascripts/sedit/blocks/#{name}.js", /className: ''/, "className: '#{name.downcase}'"
-        gsub_file "app/assets/javascripts/sedit/blocks/#{name}.js", /SirTrevor\.BlockTypes\.Name = new Name/, "SirTrevor.BlockTypes.#{name.capitalize} = new #{name.capitalize}"
+        gsub_file "app/assets/javascripts/sir-trevor/blocks/#{name}.js", /var Name/, "var #{name.capitalize}"
+        gsub_file "app/assets/javascripts/sir-trevor/blocks/#{name}.js", /title: ''/, "title: '#{name.capitalize}'"
+        gsub_file "app/assets/javascripts/sir-trevor/blocks/#{name}.js", /className: ''/, "className: '#{name.downcase}'"
+        gsub_file "app/assets/javascripts/sir-trevor/blocks/#{name}.js", /SirTrevor\.BlockTypes\.Name = new Name/, "SirTrevor.BlockTypes.#{name.capitalize} = new #{name.capitalize}"
 
         # Copy the CSS
         copy_file "_block.css.erb", "app/assets/stylesheets/sir-trevor/blocks/#{name}_block.css.erb"
