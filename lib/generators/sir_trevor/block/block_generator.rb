@@ -29,7 +29,7 @@ module SirTrevor
         
         # Copy the HTML
         copy_file "_block.html.erb", "app/views/sir-trevor/blocks/_#{name}_block.html.erb"
-        gsub_file "app/views/sir-trevor/_#{name}_block.html.erb", /\s(-block)/, " #{name}-block"
+        gsub_file "app/views/sir-trevor/blocks/_#{name}_block.html.erb", /\s(-block)/, " #{name}-block"
 
       end
 
