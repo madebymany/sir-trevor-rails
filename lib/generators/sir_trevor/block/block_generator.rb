@@ -9,20 +9,27 @@ module SirTrevor
       end
 
       def create_block
+        
+        # Copy our PNG
+        copy_file "_block.png", "app/assets/images/sir-trevor/blocks/block_editor_#{name}.png"
 
-        copy_file "_block.png", "app/assets/images/sedit/blocks/#{name}_block.png"
+        # Copy the JS
+        copy_file "_block.js", "app/assets/javascripts/sir-trevor/blocks/#{name}.js"
+        
+        gsub_file "app/assets/javascripts/sedit/blocks/#{name}.js", /var Name/, "var #{name.capitalize}"
+        gsub_file "app/assets/javascripts/sedit/blocks/#{name}.js", /title: ''/, "title: '#{name.capitalize}'"
+        gsub_file "app/assets/javascripts/sedit/blocks/#{name}.js", /className: ''/, "className: '#{name.downcase}'"
+        gsub_file "app/assets/javascripts/sedit/blocks/#{name}.js", /SirTrevor\.BlockTypes\.Name = new Name/, "SirTrevor.BlockTypes.#{name.capitalize} = new #{name.capitalize}"
 
-        copy_file "_block.js", "app/assets/javascripts/sedit/blocks/#{name}_block.js"
-        gsub_file "app/assets/javascripts/sedit/blocks/#{name}_block.js", /title: ''/, "title: '#{name.capitalize}'"
-        gsub_file "app/assets/javascripts/sedit/blocks/#{name}_block.js", /block_types\./, "block_types.#{name}"
-
-        copy_file "_block.css.erb", "app/assets/stylesheets/sedit/blocks/#{name}_block.css.erb"
-        gsub_file "app/assets/stylesheets/sedit/blocks/#{name}_block.css.erb", /_block\.png/, "#{name}_block.png"
-        gsub_file "app/assets/stylesheets/sedit/blocks/#{name}_block.css.erb", /\.sedit_new_/, ".sedit_new_#{name}"
-        gsub_file "app/assets/stylesheets/sedit/blocks/#{name}_block.css.erb", /\._block/, ".#{name}_block"
-
-        copy_file "_block.html.erb", "app/views/sedit/blocks/_#{name}_block.html.erb"
-        gsub_file "app/views/sedit/blocks/_#{name}_block.html.erb", /\s(_block)/, " #{name}_block"
+        # Copy the CSS
+        copy_file "_block.css.erb", "app/assets/stylesheets/sir-trevor/blocks/#{name}_block.css.erb"
+        gsub_file "app/assets/stylesheets/sir-trevor/blocks/#{name}_block.css.erb", /_block\.png/, "#{name}_block.png"
+        gsub_file "app/assets/stylesheets/sir-trevor/blocks/#{name}_block.css.erb", /a.new-/, "a.new-#{name}"
+        gsub_file "app/assets/stylesheets/sir-trevor/blocks/#{name}_block.css.erb", /\.-block/, ".#{name}-block"
+        
+        # Copy the HTML
+        copy_file "_block.html.erb", "app/views/sir-trevor/blocks/_#{name}_block.html.erb"
+        gsub_file "app/views/sedit/sir-trevor/_#{name}_block.html.erb", /\s(_block)/, " #{name}_block"
 
       end
 
