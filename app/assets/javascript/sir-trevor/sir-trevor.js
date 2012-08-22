@@ -1,4 +1,4 @@
-// Sir Trevor, v0.0.1
+// Sir Trevor, v0.1.0
 
 (function ($, _){
   
@@ -6,7 +6,9 @@
       SirTrevor;
    
   SirTrevor = root.SirTrevor = {}; 
-   
+  SirTrevor.DEBUG = true;
+  SirTrevor.SKIP_VALIDATION = false;
+  
   /* 
    Define default attributes that can be extended through an object passed to the
    initialize function of SirTrevor
@@ -43,13 +45,15 @@
     },
     blockLimit: 0,
     blockTypeLimits: {},
+    required: [],
     uploadUrl: '/attachments',
     baseImageUrl: '/sir-trevor-uploads/'
   }; 
-  
+
   SirTrevor.Blocks = {};
   SirTrevor.Formatters = {};
   SirTrevor.instances = [];
+  
   
   var formBound = false; // Flag to tell us once we've bound our submit event
   
@@ -182,6 +186,15 @@
     child.__super__ = parent.prototype;
   
     return child;
+  };
+  /*
+  * Ultra simple logging
+  */
+  
+  SirTrevor.log = function(message) {
+    if (!_.isUndefined(console) && SirTrevor.DEBUG) {
+      console.log(message);
+    }
   };
   /* String to slug */
   
@@ -431,6 +444,8 @@
     },
     
     setData: function(data) {
+      SirTrevor.log("Setting data for block " + this.blockID);
+      
       var dataObj = this.getData();
       dataObj.data = data;
       // Update our static reference too
@@ -469,8 +484,6 @@
     validate: function() {
       var fields = this.$$('.required, [data-maxlength]'),
           errors = 0;
-      
-      console.log(fields);
           
       _.each(fields, _.bind(function(field) {
         field = $(field);
@@ -496,6 +509,9 @@
       Can be overwritten, although hopefully this will cover most situations
     */
     toData: function() {
+      
+      SirTrevor.log("toData for " + this.blockID);
+      
       var bl = this.$el,
           dataObj = {};
       
@@ -610,6 +626,9 @@
     /* Private methods */
     
     _loadData: function() {
+      
+      SirTrevor.log("loadData for " + this.blockID);
+      
       this.loading();
       
       if(this.dropEnabled) {
@@ -699,6 +718,8 @@
     */
     
     _initDragDrop: function() {
+      SirTrevor.log("Adding drag and drop capabilities for block " + this.blockID);
+      
       this.$dropzone = $("<div>", {
         html: this.dropzoneHTML,
         class: "dropzone " + this.className + '-block'
@@ -1446,8 +1467,8 @@
         
         var blockIterator = function(block, index) {
           block = $(block);
-          var block_top = block.position().top - 35,
-              block_bottom = block.position().top + block.outerHeight(true) - 35;
+          var block_top = block.position().top - 40,
+              block_bottom = block.position().top + block.outerHeight(true) - 40;
       
           if(block_top <= mouse_enter && mouse_enter < block_bottom) {
             closest_block = block;
@@ -1565,9 +1586,10 @@
     
     onWrapperClick: function(ev){
       var item = $(ev.target),
-          parent = item.parent();
+          parent = item.parent(),
+          parents = item.parents('text-block');
           
-      if(!(item.hasClass(this.className) || parent.hasClass(this.className) || item.hasClass('text-block') || parent.hasClass('text-block'))) {
+      if (!(item.hasClass(this.className) || parent.hasClass(this.className) || item.hasClass('text-block') || parent.length > 0)) {
         this.hide();
       }
     },
@@ -1606,10 +1628,13 @@
   
   var SirTrevorEditor = SirTrevor.Editor = function(options) {
     
+    SirTrevor.log("Init SirTrevor.Editor");
+    
     this.blockTypes = {};
     this.formatters = {};
     this.blockCounts = {}; // Cached block type counts
     this.blocks = []; // Block references
+    this.errors = [];
     this.options = _.extend({}, SirTrevor.DEFAULTS, options || {});
     this.ID = _.uniqueId(this.options.baseCSSClass + "-");
     
@@ -1622,6 +1647,7 @@
         this.onEditorRender = this.options.onEditorRender;
       }
       
+      this._setRequired();
       this._setBlocksAndFormatters();
       this._bindFunctions();
       this.from_json();
@@ -1683,6 +1709,7 @@
            
        // Can we have another one of these blocks?
        if ((blockTypeLimit !== 0 && currentBlockCount > blockTypeLimit) || this.options.blockLimit !== 0 && totalBlockCounts >= this.options.blockLimit) {
+         SirTrevor.log("Block Limit reached for type " + type);
          return false;
        }
        
@@ -1702,10 +1729,15 @@
        }
         
        if (blockTypeLimit !== 0 && currentBlockCount >= blockTypeLimit) {
+         SirTrevor.log("Block Limit reached for type " + type + " setting state as inactive");
          this.marker.$el.find('[data-type="' + type + '"]')
           .addClass('inactive')
           .attr('title','You have reached the limit for this type of block');
        } 
+        
+       SirTrevor.log("Block created of type " + type);
+      } else {
+        SirTrevor.log("Block type not available " + type);
       }
     },
     
@@ -1722,6 +1754,7 @@
       
       // Remove our inactive class if it's no longer relevant
       if(this._getBlockTypeLimit(block.type) > this.blockCounts[block.type]) {
+        SirTrevor.log("Removing block limit for " + block.type);
         this.marker.$el.find('[data-type="' + block.type + '"]')
           .removeClass('inactive')
           .attr('title','Add a ' + block.type + ' block');
@@ -1733,9 +1766,12 @@
       Validate all of our blocks, and serialise all data onto the JSON objects
     */
     onFormSubmit: function() {
+      SirTrevor.log("Handling form submission for Editor " + this.ID);
       
       var blockLength, block, result, errors = 0;
   
+      this.formatBar.hide();
+      this.removeErrors();
       this.options.blockStore.data = [];
       
       // Loop through blocks to validate
@@ -1746,21 +1782,89 @@
         
         if (!_.isUndefined(_block) || !_.isEmpty(_block) || typeof _block == SirTrevor.Block) {
           // Validate our block
-          if(_block.validate())
+          if(_block._validate() || SirTrevor.SKIP_VALIDATION)
           {
             var data = _block.save();
             if(!_.isEmpty(data.data)) {
+              SirTrevor.log("Adding data for block " + _block.blockID + " to block store");
               this.options.blockStore.data.push(data);
             }
-          } else errors++;
+          } else { 
+            SirTrevor.log("Block " + _block.blockID + " failed validation");
+            errors++;
+          }
         }
         
       };
       _.each(this.$wrapper.find('.' + this.options.baseCSSClass + "-block"), _.bind(blockIterator, this));
   
+      // Validate against our required fields (if there are any)
+      if (this.required && !SirTrevor.SKIP_VALIDATION) {
+        _.each(this.required, _.bind(function(type) {
+          if (this._blockTypeAvailable(type)) {
+            // Valid block type to validate against
+            if (_.isUndefined(this.blockCounts[type]) || this.blockCounts[type] === 0) {
+              
+              this.errors.push({ text: "You must have a block of type " + type });
+              
+              SirTrevor.log("Failed validation on required block type " + type);
+              errors++;
+              
+            } else {
+              // We need to also validate that we have some data of this type too. 
+              // This is ugly, but necessary for proper validation on blocks that don't have required fields.
+              var blocks = _.filter(this.blocks, function(b){ return (b.type == type && !_.isEmpty(b.data)); });
+              
+              if (blocks.length === 0) {
+                this.errors.push({ text: "A required block type " + type + " is empty" });
+                errors++;
+                SirTrevor.log("A required block type " + type + " is empty");
+              }
+              
+            }
+          }
+        }, this));
+      }
+  
       // Empty or JSON-ify
       this.$el.val((this.options.blockStore.data.length === 0) ? '' : this.to_json());
+      
+      if (errors > 0) this.renderErrors();
+      
       return errors;
+    },
+    
+    renderErrors: function() {
+      if (this.errors.length > 0) {
+        
+        if (_.isUndefined(this.$errors)) {
+          this.$errors = $("<div>", {
+            class: this.options.baseCSSClass + "-errors",
+            html: "<p>You have the following errors: </p><ul></ul>"
+          });
+          this.$outer.prepend(this.$errors);
+        }
+        
+        var list = this.$errors.find('ul');
+        
+        _.each(this.errors, _.bind(function(error) {
+          list.append($("<li>", {
+            class: "error-msg",
+            html: error.text
+          }));
+        }, this));
+        
+        this.$errors.show();
+      }
+    },
+    
+    removeErrors: function() {
+      if (this.errors.length > 0) {
+        // We have old errors to remove
+        this.$errors.find('ul').html(''); 
+        this.$errors.hide();
+        this.errors = [];
+      }
     },
     
     /*
@@ -1825,6 +1929,7 @@
     _ensureAndSetElements: function() {
       
       if(_.isUndefined(this.options.el) || _.isEmpty(this.options.el)) {
+        SirTrevor.log("You must provide an el");
         return false;
       }
        
@@ -1838,9 +1943,13 @@
                       'class': this.options.baseCSSClass + " " + this.options.baseCSSClass + "_dragleave",
                       dropzone: 'copy link move'
                     })
-                  );
+                  )
+                .wrap($("<div>", {
+                  class: this.options.baseCSSClass + "-blocks"
+                }));
         
-      this.$wrapper = this.$form.find('#' + this.ID); 
+      this.$outer = this.$form.find('#' + this.ID); 
+      this.$wrapper = this.$outer.find("." + this.options.baseCSSClass + "-blocks");
       return true;
     },
     
@@ -1852,6 +1961,11 @@
     _setBlocksAndFormatters: function() {
       this.blockTypes = flattern((_.isUndefined(this.options.blockTypes)) ? SirTrevor.Blocks : this.options.blockTypes);
       this.formatters = flattern((_.isUndefined(this.options.formatters)) ? SirTrevor.Formatters : this.options.formatters);    
+    },
+    
+    /* Get our required blocks (if any) */
+    _setRequired: function() {
+      this.required = (_.isArray(this.options.required) && !_.isEmpty(this.options.required)) ? this.options.required : false;
     },
     
     /*
@@ -1961,9 +2075,19 @@
       errors += inst.onFormSubmit();
     });
     
+    SirTrevor.log("Total errors: " + errors);
+    
     if(errors > 0) {
       ev.preventDefault();
     } 
+  };
+  
+  SirTrevor.runOnAllInstances = function(method) {
+    if (_.has(SirTrevor.Editor.prototype, method)) {
+      _.invoke(SirTrevor.instances, method);
+    } else {
+      SirTrevor.log("method doesn't exist");
+    }
   };
 
 }(jQuery, _));
