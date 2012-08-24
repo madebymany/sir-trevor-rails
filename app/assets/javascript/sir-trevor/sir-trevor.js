@@ -6,7 +6,7 @@
       SirTrevor;
    
   SirTrevor = root.SirTrevor = {}; 
-  SirTrevor.DEBUG = true;
+  SirTrevor.DEBUG = false;
   SirTrevor.SKIP_VALIDATION = false;
   
   /* 
@@ -15,11 +15,7 @@
   */
   
   SirTrevor.DEFAULTS = {
-    
     baseCSSClass: "sir-trevor",
-    blockStore: {
-      data: []
-    },
     defaultType: "Text",
     spinner: {
       className: 'spinner',
@@ -53,7 +49,6 @@
   SirTrevor.Blocks = {};
   SirTrevor.Formatters = {};
   SirTrevor.instances = [];
-  
   
   var formBound = false; // Flag to tell us once we've bound our submit event
   
@@ -109,21 +104,16 @@
   
   (function($){
     function dragEnter(e) {
-      $(e.target).addClass("dragOver");
       halt(e);
-      return false;
     }
   
     function dragOver(e) {
       e.originalEvent.dataTransfer.dropEffect = "copy";
       halt(e);
-      return false;
     }
   
     function dragLeave(e) {
-      $(e.target).removeClass("dragOver");
       halt(e);
-      return false;
     }
   
     $.fn.dropArea = function(){
@@ -132,6 +122,14 @@
            bind("dragleave", dragLeave);
       return this;
     };
+    
+    $.fn.noDropArea = function(){
+      this.unbind("dragenter").
+           unbind("dragover").
+           unbind("dragleave");
+      return this;
+    };
+    
   })(jQuery);
   /*
     Backbone Inheritence 
@@ -267,6 +265,235 @@
     
   })(jQuery);
   /*
+  * Sir Trevor Block Store
+  * By default we store the data on the instance
+  * We can easily extend this and store it on some server or something
+  */
+  
+  SirTrevor.blockStore = function(method, block, options) {
+    
+    var resp;
+    
+    options = options || {};
+    
+    switch(method) {
+      
+      case "create":
+        var data = options.data || {};
+        block.dataStore = { type: block.type.toLowerCase(), data: data };
+      break;
+      
+      case "save":
+        if (options.data) {
+          block.dataStore.data = options.data;
+          resp = block.dataStore;
+        }
+      break;
+      
+      case "read":
+        resp = block.dataStore;
+      break;
+      
+    }
+    
+    if(resp) {
+      return resp;
+    }
+    
+  }; 
+  /*
+  * Sir Trevor Editor Store
+  * By default we store the complete data on the instances $el
+  * We can easily extend this and store it on some server or something
+  */
+  
+  SirTrevor.editorStore = function(method, editor, options) {
+    
+    var resp;
+    
+    options = options || {};
+    
+    switch(method) {
+      
+      case "create":
+        // Grab our JSON
+        var content = editor.$el.val();
+        editor.dataStore = { data: [] };
+  
+        if (content.length > 0) {
+          try {
+            // Ensure the JSON string has a data element that's an array
+            var str = JSON.parse(content);
+            if (!_.isUndefined(str.data) && (_.isArray(str.data) && !_.isEmpty(str.data))) {
+              // Set it
+              editor.dataStore = str;
+            } 
+          } catch(e) {
+            console.log('Sorry there has been a problem with parsing the JSON');
+            console.log(e);
+          }
+        }
+      break;
+      
+      case "reset":
+        editor.dataStore = { data: [] };
+      break;
+      
+      case "add":
+        if (options.data) {
+          editor.dataStore.data.push(options.data);
+          resp = editor.dataStore;
+        }
+      break;
+      
+      case "save":
+        // Store to our element
+        editor.$el.val((editor.dataStore.data.length > 0) ? JSON.stringify(editor.dataStore) : '');
+      break;
+      
+      case "read":
+        resp = editor.dataStore;
+      break;
+      
+    }
+    
+    if(resp) {
+      return resp;
+    }
+    
+  }; 
+  
+  
+  
+  /* 
+    SirTrevor.Submittable
+    --
+    We need a global way of setting if the editor can and can't be submitted,
+    and a way to disable the submit button and add messages (when appropriate)
+    We also need this to be highly extensible so it can be overridden.
+    This will be triggered *by anything* so it needs to subscribe to events.
+  */
+  
+  var Submittable = function(){
+    this.intialize();
+  };
+  
+  _.extend(Submittable.prototype, {
+    
+    intialize: function(){
+      this.submitBtn = $("input[type='submit']");
+      
+      var btnTitles = [];
+      
+      _.each(this.submitBtn, function(btn){
+        btnTitles.push($(btn).attr('value'));
+      });
+      
+      this.submitBtnTitles = btnTitles;
+      this.canSubmit = true;
+      this.globalUploadCount = 0;
+      this._bindEvents();
+    },
+    
+    setSubmitButton: function(e, message) {
+      this.submitBtn.attr('value', message);
+    },
+    
+    resetSubmitButton: function(){
+      _.each(this.submitBtn, _.bind(function(item, index){
+        $(item).attr('value', this.submitBtnTitles[index]);
+      }, this));
+    },
+    
+    onUploadStart: function(e){
+      this.globalUploadCount++;
+      SirTrevor.log('onUploadStart called ' + this.globalUploadCount);
+      
+      if(this.globalUploadCount === 1) {
+        this.setSubmitButton(null, "Please wait...");
+        this._disableSubmitButton();
+      }
+    },
+    
+    onUploadStop: function(e) {
+      this.globalUploadCount = (this.globalUploadCount <= 0) ? 0 : this.globalUploadCount - 1;
+      
+      SirTrevor.log('onUploadStop called ' + this.globalUploadCount);
+      
+      if(this.globalUploadCount === 0) {
+        this._enableSubmitButton();
+        this.resetSubmitButton();
+      }
+    },
+    
+    onError: function(e){
+      SirTrevor.log('onError called');
+      this.canSubmit = false;
+    },
+    
+    _disableSubmitButton: function(){
+      this.submitBtn
+        .attr('disabled', 'disabled')
+        .addClass('disabled');
+    },
+    
+    _enableSubmitButton: function(){
+      this.submitBtn
+        .removeAttr('disabled')
+        .removeClass('disabled');
+    },
+    
+    _bindEvents: function(){
+      $.subscribe("editor/setSubmitButton", _.bind(this.setSubmitButton, this));
+      $.subscribe("editor/resetSubmitButton", _.bind(this.resetSubmitButton, this));
+      $.subscribe("editor/onError", _.bind(this.onError, this));
+      $.subscribe("editor/onUploadStart", _.bind(this.onUploadStart, this));
+      $.subscribe("editor/onUploadStop", _.bind(this.onUploadStop, this));
+    }
+    
+  });
+  
+  SirTrevor.submittable = function(){
+    new Submittable();
+  };
+  /* 
+  *   Sir Trevor Uploader
+  *   Generic Upload implementation that can be extended for blocks
+  */
+  
+  SirTrevor.fileUploader = function(block, file, callback) {
+    
+    $.publish("editor/onUploadStart");
+    
+    var uid  = [block.instance.ID, (new Date()).getTime(), 'raw'].join('-');
+    
+    var data = new FormData();
+    
+    data.append('attachment[name]', file.name);
+    data.append('attachment[file]', file);
+    data.append('attachment[uid]', uid);
+    
+    var callbackSuccess = function(data){
+      if (!_.isUndefined(callback) && _.isFunction(callback)) {
+        SirTrevor.log('Upload callback called');
+        $.publish("editor/onUploadStop");
+        _.bind(callback, block)(data); // Invoke with a reference to 'this' (the block)
+      }
+    };
+    
+    $.ajax({
+      url: block.instance.options.uploadUrl,
+      data: data,
+      cache: false,
+      contentType: false,
+      processData: false,
+      type: 'POST',
+      success: callbackSuccess
+    });
+    
+  };
+  
+  /*
     Underscore helpers
   */
   
@@ -287,10 +514,13 @@
   
     this.instance = instance;
     this.type = this._getBlockType();
-    this.data = data;
+    
+    this.store("create", this, { data: data }); 
+    
+    //this.data = data;
     this.uploadsCount = 0;
     this.blockID = _.uniqueId(this.className + '-');
-    
+      
     this._setBaseElements();
     this._bindFunctions();
     
@@ -320,7 +550,7 @@
   
   _.extend(Block.prototype, FunctionBind, {
     
-    bound: ["_handleDrop", "_handleContentPaste", "onBlockFocus", "onDrop", "onDragStart", "onDragEnd"],
+    bound: ["_handleDrop", "_handleContentPaste", "onBlockFocus", "onBlockBlur", "onDrop", "onDragStart", "onDragEnd"],
     
     $: function(selector) {
       return this.$el.find(selector);
@@ -347,6 +577,10 @@
     toMarkdown: function(markdown){ return markdown; },
     toHTML: function(html){ return html; },
     
+    store: function(){
+      return SirTrevor.blockStore.apply(this, arguments);
+    },
+    
     render: function() {
       
       this.beforeBlockRender();
@@ -362,7 +596,9 @@
       }
       
       // Has data already?
-      if (!_.isUndefined(this.data) && !_.isEmpty(this.data)) {
+      var currentData = this.getData();
+      
+      if (!_.isUndefined(currentData) && !_.isEmpty(currentData)) {
         this._loadData();
       }
       
@@ -378,8 +614,10 @@
         .bind('drop', halt)
         .bind('mouseover', halt)
         .bind('mouseout', halt)
+        .bind('dragleave', halt)
         .bind('mouseover', function(ev){ $(this).siblings().removeClass('active'); $(this).addClass('active'); })
-        .bind('mouseout', function(ev){ $(this).removeClass('active'); });
+        .bind('mouseout', function(ev){ $(this).removeClass('active'); })
+        .bind('dragover', function(ev){ ev.preventDefault(); });
   
       // Handle pastes
       this._initPaste();
@@ -393,7 +631,9 @@
         document.execCommand("insertBrOnReturn", false, true);
         
         // Bind our text block to show the format bar
-        this.$$('.text-block').focus(this.onBlockFocus);
+        this.$$('.text-block')
+          .focus(this.onBlockFocus)
+          .blur(this.onBlockBlur);
         
         // Strip out all the HTML on paste
         this.$$('.text-block').bind('paste', this._handleContentPaste);
@@ -403,7 +643,7 @@
       }
       
       // Focus if we're adding an empty block
-      if (_.isEmpty(this.data)) {
+      if (_.isEmpty(currentData.data)) {
         var inputs = this.$$('[contenteditable="true"], input');
         if (inputs.length > 0 && !this.dropEnabled) {
           inputs[0].focus();
@@ -427,36 +667,17 @@
   
     /* Save the state of this block onto the blocks data attr */
     save: function() {
-      var data = this.getData();
-      
-      if (_.isUndefined(data)) {
-        // Create our data object on the element
-        this.$el.data('block', this.to_json());
-      } else {
-        // We need to grab the state and save it here.
-        this.toData();
-      }
-      return this.getData();
+      this.toData();
+      return this.store("read", this);
     },
     
     getData: function() {
-      return this.$el.data('block');
+      return this.store("read", this).data;
     },
     
     setData: function(data) {
       SirTrevor.log("Setting data for block " + this.blockID);
-      
-      var dataObj = this.getData();
-      dataObj.data = data;
-      // Update our static reference too
-      this.data = data;
-    },
-    
-    to_json: function(data) {
-      return {
-        type: this.type.toLowerCase(),
-        data: this.data
-      };
+      this.store("save", this, { data: data });
     },
     
     loading: function() {
@@ -561,8 +782,8 @@
   
     onDragStart: function(ev){
       var item = $(ev.target);
-      ev.originalEvent.dataTransfer.setData('Text', item.parent().attr('id'));
       ev.originalEvent.dataTransfer.setDragImage(item.parent()[0], 13, 25);
+      ev.originalEvent.dataTransfer.setData('Text', item.parent().attr('id'));
       item.parent().addClass('dragging');
       this.instance.formatBar.hide();
     },
@@ -574,7 +795,18 @@
     },
     
     onBlockFocus: function(ev) {
-      this.instance.formatBar.show(this.$el);
+      _.delay(_.bind(function(){
+        this.instance.formatBar.clicked = false;
+        this.instance.formatBar.show(this.$el);
+      }, this), 250);
+    },
+    
+    onBlockBlur: function(ev) {
+      _.delay(_.bind(function(){
+          if(!this.instance.formatBar.clicked) {
+            this.instance.formatBar.hide();
+          }
+      }, this), 250);
     },
     
     onDeleteClick: function(ev) {
@@ -596,31 +828,8 @@
       Designed to handle any attachments
     */
     
-    uploadAttachment: function(file, callback){
-      
-      var uid  = [this.instance.ID, (new Date()).getTime(), 'raw'].join('-');
-      
-      var data = new FormData();
-      
-      data.append('attachment[name]', file.name);
-      data.append('attachment[file]', file);
-      data.append('attachment[uid]', uid);
-      
-      var callbackSuccess = function(data){
-        if (!_.isUndefined(callback) && _.isFunction(callback)) {
-          _.bind(callback, this)(data); // Invoke with a reference to 'this' (the block)
-        }
-      };
-      
-      $.ajax({
-        url: this.instance.options.uploadUrl,
-        data: data,
-        cache: false,
-        contentType: false,
-        processData: false,
-        type: 'POST',
-        success: _.bind(callbackSuccess, this)
-      });
+    uploader: function(file, callback){
+      SirTrevor.fileUploader(this, file, callback);
     },
     
     /* Private methods */
@@ -636,7 +845,7 @@
         this.$editor.show();
       }
       
-      this.loadData(this.data);
+      this.loadData(this.getData());
       this.ready();
     },
     
@@ -665,6 +874,8 @@
           types = e.dataTransfer.types,
           type, data = [];
       
+      this.instance.formatBar.hide();
+      this.instance.marker.hide();
       this.$dropzone.removeClass('dragOver');
           
       /*
@@ -694,6 +905,7 @@
         'class': this.instance.options.baseCSSClass + "-block", 
         id: this.blockID,
         "data-type": this.type,
+        "data-instance": this.instance.ID,
         html: editor
       });
       
@@ -734,11 +946,9 @@
     
     _initReordering: function() {
       this.$('.handle')
-        .dropArea()
         .bind('dragstart', this.onDragStart)
-        .bind('drag', this.instance.marker.show)
         .bind('dragend', this.onDragEnd)
-        .bind('dragleave', function(){});
+        .bind('drag', this.instance.marker.show);
     },
     
     _initFormatting: function() {
@@ -987,7 +1197,7 @@
         // Multi files 'ere
         var l = transferData.files.length,
             file, urlAPI = (typeof URL !== "undefined") ? URL : (typeof webkitURL !== "undefined") ? webkitURL : null;
-            
+  
         this.loading();
         
         while (l--) {
@@ -998,18 +1208,18 @@
             this.$editor.show();
             
             /* Upload */
-            this.uploadAttachment(file, function(data){
+            this.uploader(file, function(data){
               
               this.uploadsCount -= 1;
-              var dataStruct = this.$el.data('block');
+              var dataStruct = this.getData();
               data = { type: "image", data: data };
               
               // Add to our struct
-              if (!_.isArray(dataStruct.data)) {
-                dataStruct.data = [];
+              if (!_.isArray(dataStruct)) {
+                dataStruct = [];
               }
-              dataStruct.data.push(data);
-              this.$el.data('block',dataStruct);
+              dataStruct.push(data);
+              this.setData(dataStruct);
               
               // Pass this off to our render gallery thumb method
               this.renderGalleryThumb(data);
@@ -1069,7 +1279,8 @@
         this.$editor.show();
         
         // Upload!
-        this.uploadAttachment(file, function(data){
+        $.publish('editor/setSubmitButton', ['Please wait...']); 
+        this.uploader(file, function(data){
           // Store the data on this block
           this.setData(data);
           // Done
@@ -1082,7 +1293,7 @@
     Text Block
   */
   
-  var tb_template = '<div class="required text-block" contenteditable="true"></div>';
+  var tb_template = 
   
   SirTrevor.Blocks.Text = SirTrevor.Block.extend({ 
     
@@ -1090,9 +1301,7 @@
     className: "text",
     limit: 0,
     
-    editorHTML: function() {
-      return _.template(tb_template, this);
-    },
+    editorHTML: '<div class="required text-block" contenteditable="true"></div>',
     
     loadData: function(data){
       this.$$('.text-block').html(this.instance._toHTML(data.text, this.type));
@@ -1435,19 +1644,23 @@
       // Do we have any buttons?
       if(this.$btns.children().length === 0) this.$el.addClass('hidden');
       
-      // Bind the drop function onto here
-      this.$el.dropArea();
-      this.$el.bind('drop', this.onDrop);
-      
       // Bind our marker to the wrapper
-      this.instance.$wrapper.bind('mouseover', this.show);
-      this.instance.$wrapper.bind('mouseout', this.hide);
+      this.instance.$outer.bind('mouseover', this.show);
+      this.instance.$outer.bind('mouseout', this.hide);
+      this.instance.$outer.bind('dragover', this.show);    
+      this.$el.bind('dragover',halt);
+      
+      // Bind the drop function onto here
+      this.instance.$outer.dropArea();
+      this.instance.$outer.bind('dragleave', this.hide);    
+      this.instance.$outer.bind('drop', this.onDrop);
       
       this.$el.addClass('sir-trevor-item-ready');    
     },
       
     show: function(ev){ 
-      if(ev.type == 'drag') {
+      
+      if(ev.type == 'drag' || ev.type == 'dragover') {
         this.$p.text(this.options.dropText);
         this.$btns.hide();
       } else {
@@ -1475,14 +1688,14 @@
           }
         };
         _.each(wrapper.find(blockClass), _.bind(blockIterator, this));
-        
+              
         // Position it
         if (closest_block) {
-          closest_block.before(this.$el);
+          this.$el.insertBefore(closest_block);
         } else if(mouse_enter > 0) {
-          wrapper.find(blockClass).last().after(this.$el);
+          this.$el.insertAfter(wrapper.find(blockClass).last());
         } else {
-          wrapper.find(blockClass).first().before(this.$el);
+          this.$el.insertBefore(wrapper.find(blockClass).first());
         }
       }
       this.$el.addClass('sir-trevor-item-ready');
@@ -1493,13 +1706,13 @@
     },
     
     onDrop: function(ev){
-      halt(ev);
-      
-      var marker = $(ev.target),
+      ev.preventDefault();
+         
+      var marker = this.$el,
           item_id = ev.originalEvent.dataTransfer.getData("text/plain"),
           block = $('#' + item_id);
           
-      if (!_.isUndefined(item_id) && !_.isEmpty(block)) {
+      if (!_.isUndefined(item_id) && !_.isEmpty(block) && block.attr('data-instance') == this.instance.ID) {
         marker.after(block);
       }
     },
@@ -1516,6 +1729,14 @@
       }
       
       this.instance.createBlock(button.attr('data-type'), {});
+    },
+    
+    move: function(top) {
+      this.$el.css({
+        top: top
+      });
+      this.$el.show();
+      this.$el.addClass('sir-trevor-item-ready');
     }
   });
   
@@ -1534,6 +1755,7 @@
     this.instance = editorInstance;
     this.options = _.extend({}, SirTrevor.DEFAULTS.formatBar, options || {});
     this.className = this.instance.options.baseCSSClass + "-" + this.options.baseCSSClass;
+    this.clicked = false;
     this._bindFunctions();
   };
   
@@ -1568,11 +1790,9 @@
       
       if(this.$el.find('button').length === 0) this.$el.addClass('hidden');
       
-      this.$el.hide();
-      this.$el.bind('mouseout', halt);
+      this.hide();
+      this.$el.bind('mouseout', _.bind(function(ev){ halt(ev); this.clicked = false; }, this));
       this.$el.bind('mouseover', halt);
-      
-      this.instance.$wrapper.bind('click', this.onWrapperClick);
     },
     
     /* Convienience methods */
@@ -1580,29 +1800,21 @@
       this.$el.css({
         top: relativeEl.position().top
       });
-      this.$el.show();
-      this.$el.addClass('sir-trevor-item-ready'); 
-    },
-    
-    onWrapperClick: function(ev){
-      var item = $(ev.target),
-          parent = item.parent(),
-          parents = item.parents('text-block');
-          
-      if (!(item.hasClass(this.className) || parent.hasClass(this.className) || item.hasClass('text-block') || parent.length > 0)) {
-        this.hide();
-      }
+      this.$el.addClass('sir-trevor-item-ready');
+      this.$el.show(); 
     },
   
     hide: function(){ 
-      this.$el.hide();
+      this.clicked = false;
       this.$el.removeClass('sir-trevor-item-ready'); 
+      this.$el.hide();
     },
     
     remove: function(){ this.$el.remove(); },
     
     onFormatButtonClick: function(ev){
       halt(ev);
+      this.clicked = true;
       var btn = $(ev.target),
           format = SirTrevor.Formatters[btn.attr('data-type')];
        
@@ -1643,14 +1855,15 @@
       this.marker = new SirTrevor.Marker(this.options.marker, this);
       this.formatBar = new SirTrevor.FormatBar(this.options.formatBar, this);
       
-      if(this.options.onEditorRender) {
+      if(!_.isUndefined(this.options.onEditorRender) && _.isFunction(this.options.onEditorRender)) {
         this.onEditorRender = this.options.onEditorRender;
       }
       
       this._setRequired();
       this._setBlocksAndFormatters();
       this._bindFunctions();
-      this.from_json();
+      
+      this.store("create", this); // Make our storage
       this.build();
       
       SirTrevor.instances.push(this); // Store a reference to this instance
@@ -1676,18 +1889,28 @@
       this.marker.render();
       this.formatBar.render();
       
-      if (this.options.blockStore.data.length === 0) {
+      var store = this.store("read", this);
+      
+      if (store.data.length === 0) {
         // Create a default instance
         this.createBlock(this.options.defaultType);
       } else {
         // We have data. Build our blocks from here.
-        _.each(this.options.blockStore.data, _.bind(function(block){
+        _.each(store.data, _.bind(function(block){
+          console.log('Creating: ', block);
           this.createBlock(block.type, block.data);
         }, this));
       }
           
       this.$wrapper.addClass('sir-trevor-ready');
-      this.onEditorRender();
+      
+      if(!_.isUndefined(this.onEditorRender)) {
+        this.onEditorRender();
+      } 
+    },
+    
+    store: function(){
+      return SirTrevor.editorStore.apply(this, arguments);
     },
     
     /*
@@ -1772,7 +1995,8 @@
   
       this.formatBar.hide();
       this.removeErrors();
-      this.options.blockStore.data = [];
+      // Reset our store
+      this.store("reset", this);
       
       // Loop through blocks to validate
       var blockIterator = function(block,index) {
@@ -1784,10 +2008,10 @@
           // Validate our block
           if(_block._validate() || SirTrevor.SKIP_VALIDATION)
           {
-            var data = _block.save();
-            if(!_.isEmpty(data.data)) {
+            var store = _block.save();
+            if(!_.isEmpty(store.data)) {
               SirTrevor.log("Adding data for block " + _block.blockID + " to block store");
-              this.options.blockStore.data.push(data);
+              this.store("add", this, { data: store });
             }
           } else { 
             SirTrevor.log("Block " + _block.blockID + " failed validation");
@@ -1813,7 +2037,7 @@
             } else {
               // We need to also validate that we have some data of this type too. 
               // This is ugly, but necessary for proper validation on blocks that don't have required fields.
-              var blocks = _.filter(this.blocks, function(b){ return (b.type == type && !_.isEmpty(b.data)); });
+              var blocks = _.filter(this.blocks, function(b){ return (b.type == type && !_.isEmpty(b.getData())); });
               
               if (blocks.length === 0) {
                 this.errors.push({ text: "A required block type " + type + " is empty" });
@@ -1826,8 +2050,8 @@
         }, this));
       }
   
-      // Empty or JSON-ify
-      this.$el.val((this.options.blockStore.data.length === 0) ? '' : this.to_json());
+      // Save it
+      this.store("save", this);
       
       if (errors > 0) this.renderErrors();
       
@@ -1866,40 +2090,6 @@
         this.errors = [];
       }
     },
-    
-    /*
-      Turn our JSON blockStore into a string
-    */  
-    to_json: function() {
-      return JSON.stringify(this.options.blockStore);
-    },
-    
-    /* 
-      Try and load our data from the defined element.
-      Store it on our blockStore property for later re-use.
-    */
-    from_json: function() {
-      var content = this.$el.val();
-      this.options.blockStore = { data: [] };
-      
-      if (content.length > 0) {
-        try{
-          
-          // Ensure the JSON string has a data element that's an array
-          var str = JSON.parse(content);
-          
-          if (!_.isUndefined(str.data) && (_.isArray(str.data) && !_.isEmpty(str.data))) {
-            // Set it
-            this.options.blockStore = str;
-          } 
-        } catch(e) {
-          console.log('Sorry there has been a problem with parsing the JSON');
-          console.log(e);
-        }
-      } 
-    },
-    
-    onEditorRender: function(){},
     
     /*
       Get Block Type Limit
@@ -2063,6 +2253,7 @@
   
   SirTrevor.bindFormSubmit = function(form) {
     if (!formBound) {
+      SirTrevor.submittable();
       form.bind('submit', this.onFormSubmit);
       formBound = true;
     }
