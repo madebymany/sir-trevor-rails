@@ -108,3 +108,9 @@ Returns an image tag from a SirTrevor Image block
 - Rails 3.x  
 - jQuery
 - Underscore.js (bundled)
+
+# Licence
+
+Sir Trevor Rails is released under the MIT Licence
+
+http://www.opensource.org/licenses/MIT
