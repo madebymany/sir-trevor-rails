@@ -8,42 +8,25 @@ module SirTrevor
       def render_sir_trevor(json, image_type = "large")
         hash = JSON.parse(json)
 
-        extension = @mobile_device ? :mobile : :html
-        formats = [extension, :html].uniq
-        
         if hash.has_key?("data")
           hash["data"].map { |object|
-            render(:partial => "sir-trevor/blocks/#{object["type"].to_s.downcase}_block", :locals => { :block => object['data'], :image_type => image_type, :protocol => request.protocol}, :formats => formats) if object.has_key?("data")
+            render(:partial => "sir-trevor/blocks/#{object["type"].to_s.downcase}_block", :locals => { :block => object['data'], :image_type => image_type, :protocol => request.protocol} ) if object.has_key?("data")
           }.compact.join.html_safe
         else
           ''
         end
+      end
 
-      end
-      
-      # Get's the first instance of a type from the specified JSON
-      def pluck_sir_trevor_type(json, type) 
-        hash = JSON.parse(json)
-        if hash.has_key?("data")
-          item = hash["data"].select { |item| item["type"] == type }
-          item.first
-        end
-      end
-      
       def render_sir_trevor_image(json, image_type = "large")
         image = pluck_sir_trevor_type(json, "image")
-        
-        extension = @mobile_device ? :mobile : :html
-        formats = [extension, :html].uniq
-        
+    
         unless image.nil? 
-          render(:partial => "sir-trevor/blocks/image_block", :locals => {:block => image['data'], :image_type => image_type, :protocol => request.protocol}, :formats => formats) if image.has_key?("data")
+          render(:partial => "sir-trevor/blocks/image_block", :locals => {:block => image['data'], :image_type => image_type, :protocol => request.protocol}) if image.has_key?("data")
         end
       end
       
       def sir_trevor_image_tag(block, image_type) 
-        
-        # Does the image type exist on ther block?
+        # Does the image type exist on the block?
         if(block['file'].present? && block['file'][image_type].present?)
         
           image = block['file'][image_type]
@@ -71,6 +54,15 @@ module SirTrevor
         markdown.render(text).html_safe
       end
 
+      private
+        # Get's the first instance of a type from the specified JSON
+        def pluck_sir_trevor_type(json, type) 
+          hash = JSON.parse(json)
+          if hash.has_key?("data")
+            item = hash["data"].select { |item| item["type"] == type }
+            item.first
+          end
+        end
     end
   end
 end
