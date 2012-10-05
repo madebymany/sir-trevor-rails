@@ -91,10 +91,6 @@ We don't provide a default image uploader out of the box, because everyone will 
 
 Parses the blocks JSON content, loops through each piece of block content and render the appropriate partial for the block. 
 
-**`pluck_sir_trevor_type`**
-
-Get the first instance of a specified SirTrevor block type from the supplied JSON
-
 **`render_sir_trevor_image`**
 
 Returns the first available SirTrevor image from the supplied JSON.
@@ -103,11 +99,19 @@ Returns the first available SirTrevor image from the supplied JSON.
 
 Returns an image tag from a SirTrevor Image block
 
+**`pluck_sir_trevor_type` (Private)**
+
+Get the first instance of a specified SirTrevor block type from the supplied JSON
+
 # Requirements
 
 - Rails 3.x  
 - jQuery
 - Underscore.js (bundled)
+
+# To do
+
+- Add tests 
 
 # Licence
 
