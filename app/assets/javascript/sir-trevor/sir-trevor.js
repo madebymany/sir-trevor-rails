@@ -1,4 +1,4 @@
-// Sir Trevor, v0.1.0
+// Sir Trevor, v0.1.2
 
 (function ($, _){
   
@@ -6,7 +6,7 @@
       SirTrevor;
    
   SirTrevor = root.SirTrevor = {}; 
-  SirTrevor.DEBUG = false;
+  SirTrevor.DEBUG = true;
   SirTrevor.SKIP_VALIDATION = false;
   
   /* 
@@ -16,6 +16,7 @@
   
   SirTrevor.DEFAULTS = {
     baseCSSClass: "sir-trevor",
+    errorClass: "sir-trevor-error",
     defaultType: "Text",
     spinner: {
       className: 'spinner',
@@ -206,15 +207,20 @@
   /* jQuery Tiny Pub/Sub - v0.7 - 10/27/2011
    * http://benalman.com/
    * Copyright (c) 2011 "Cowboy" Ben Alman; Licensed MIT, GPL */
-  var o = $({});
-  $.subscribe = function() {
+  var o = $(SirTrevor);
+  SirTrevor.subscribe = SirTrevor.on = function() {
     o.on.apply(o, arguments);
   };
-  $.unsubscribe = function() {
+  SirTrevor.unsubscribe = SirTrevor.off = function() {
     o.off.apply(o, arguments);
   };
-  $.publish = function() {
+  SirTrevor.publish = SirTrevor.trigger = function() {
     o.trigger.apply(o, arguments);
+  };
+  SirTrevor.subscribeAll = function(subscriptions) {
+    _.each(subscriptions, function(subscription) {
+      o.on.apply(o, arguments);
+    });
   };
   //fgnass.github.com/spin.js#v1.2.5
   (function(a,b,c){function g(a,c){var d=b.createElement(a||"div"),e;for(e in c)d[e]=c[e];return d}function h(a){for(var b=1,c=arguments.length;b<c;b++)a.appendChild(arguments[b]);return a}function j(a,b,c,d){var g=["opacity",b,~~(a*100),c,d].join("-"),h=.01+c/d*100,j=Math.max(1-(1-a)/b*(100-h),a),k=f.substring(0,f.indexOf("Animation")).toLowerCase(),l=k&&"-"+k+"-"||"";return e[g]||(i.insertRule("@"+l+"keyframes "+g+"{"+"0%{opacity:"+j+"}"+h+"%{opacity:"+a+"}"+(h+.01)+"%{opacity:1}"+(h+b)%100+"%{opacity:"+a+"}"+"100%{opacity:"+j+"}"+"}",0),e[g]=1),g}function k(a,b){var e=a.style,f,g;if(e[b]!==c)return b;b=b.charAt(0).toUpperCase()+b.slice(1);for(g=0;g<d.length;g++){f=d[g]+b;if(e[f]!==c)return f}}function l(a,b){for(var c in b)a.style[k(a,c)||c]=b[c];return a}function m(a){for(var b=1;b<arguments.length;b++){var d=arguments[b];for(var e in d)a[e]===c&&(a[e]=d[e])}return a}function n(a){var b={x:a.offsetLeft,y:a.offsetTop};while(a=a.offsetParent)b.x+=a.offsetLeft,b.y+=a.offsetTop;return b}var d=["webkit","Moz","ms","O"],e={},f,i=function(){var a=g("style");return h(b.getElementsByTagName("head")[0],a),a.sheet||a.styleSheet}(),o={lines:12,length:7,width:5,radius:10,rotate:0,color:"#000",speed:1,trail:100,opacity:.25,fps:20,zIndex:2e9,className:"spinner",top:"auto",left:"auto"},p=function q(a){if(!this.spin)return new q(a);this.opts=m(a||{},q.defaults,o)};p.defaults={},m(p.prototype,{spin:function(a){this.stop();var b=this,c=b.opts,d=b.el=l(g(0,{className:c.className}),{position:"relative",zIndex:c.zIndex}),e=c.radius+c.length+c.width,h,i;a&&(a.insertBefore(d,a.firstChild||null),i=n(a),h=n(d),l(d,{left:(c.left=="auto"?i.x-h.x+(a.offsetWidth>>1):c.left+e)+"px",top:(c.top=="auto"?i.y-h.y+(a.offsetHeight>>1):c.top+e)+"px"})),d.setAttribute("aria-role","progressbar"),b.lines(d,b.opts);if(!f){var j=0,k=c.fps,m=k/c.speed,o=(1-c.opacity)/(m*c.trail/100),p=m/c.lines;!function q(){j++;for(var a=c.lines;a;a--){var e=Math.max(1-(j+a*p)%m*o,c.opacity);b.opacity(d,c.lines-a,e,c)}b.timeout=b.el&&setTimeout(q,~~(1e3/k))}()}return b},stop:function(){var a=this.el;return a&&(clearTimeout(this.timeout),a.parentNode&&a.parentNode.removeChild(a),this.el=c),this},lines:function(a,b){function e(a,d){return l(g(),{position:"absolute",width:b.length+b.width+"px",height:b.width+"px",background:a,boxShadow:d,transformOrigin:"left",transform:"rotate("+~~(360/b.lines*c+b.rotate)+"deg) translate("+b.radius+"px"+",0)",borderRadius:(b.width>>1)+"px"})}var c=0,d;for(;c<b.lines;c++)d=l(g(),{position:"absolute",top:1+~(b.width/2)+"px",transform:b.hwaccel?"translate3d(0,0,0)":"",opacity:b.opacity,animation:f&&j(b.opacity,b.trail,c,b.lines)+" "+1/b.speed+"s linear infinite"}),b.shadow&&h(d,l(e("#000","0 0 4px #000"),{top:"2px"})),h(a,h(d,e(b.color,"0 0 1px rgba(0,0,0,.1)")));return a},opacity:function(a,b,c){b<a.childNodes.length&&(a.childNodes[b].style.opacity=c)}}),!function(){function a(a,b){return g("<"+a+' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">',b)}var b=l(g("group"),{behavior:"url(#default#VML)"});!k(b,"transform")&&b.adj?(i.addRule(".spin-vml","behavior:url(#default#VML)"),p.prototype.lines=function(b,c){function f(){return l(a("group",{coordsize:e+" "+e,coordorigin:-d+" "+ -d}),{width:e,height:e})}function k(b,e,g){h(i,h(l(f(),{rotation:360/c.lines*b+"deg",left:~~e}),h(l(a("roundrect",{arcsize:1}),{width:d,height:c.width,left:c.radius,top:-c.width>>1,filter:g}),a("fill",{color:c.color,opacity:c.opacity}),a("stroke",{opacity:0}))))}var d=c.length+c.width,e=2*d,g=-(c.width+c.length)*2+"px",i=l(f(),{position:"absolute",top:g,left:g}),j;if(c.shadow)for(j=1;j<=c.lines;j++)k(j,-2,"progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");for(j=1;j<=c.lines;j++)k(j);return h(b,i)},p.prototype.opacity=function(a,b,c,d){var e=a.firstChild;d=d.shadow&&d.lines||0,e&&b+d<e.childNodes.length&&(e=e.childNodes[b+d],e=e&&e.firstChild,e=e&&e.firstChild,e&&(e.opacity=c))}):f=k(b,"animation")}(),a.Spinner=p})(window,document);
@@ -260,7 +266,7 @@
     };
     
     $.fn.too_long = function() {
-      return this.chars()>this.attr('data-maxlength');
+      return this.chars() > this.attr('data-maxlength');
     };
     
   })(jQuery);
@@ -308,62 +314,60 @@
   */
   
   SirTrevor.editorStore = function(method, editor, options) {
-    
+  
     var resp;
-    
+  
     options = options || {};
-    
+  
     switch(method) {
-      
+  
       case "create":
-        // Grab our JSON
-        var content = editor.$el.val();
+        // Grab our JSON from the textarea and clean any whitespace incase there is a line wrap between the opening and closing textarea tags
+        var content = _.trim(editor.$el.val());
         editor.dataStore = { data: [] };
   
         if (content.length > 0) {
           try {
             // Ensure the JSON string has a data element that's an array
             var str = JSON.parse(content);
-            if (!_.isUndefined(str.data) && (_.isArray(str.data) && !_.isEmpty(str.data))) {
+            if (!_.isUndefined(str.data)) {
               // Set it
               editor.dataStore = str;
-            } 
+            }
           } catch(e) {
             console.log('Sorry there has been a problem with parsing the JSON');
             console.log(e);
           }
         }
       break;
-      
+  
       case "reset":
         editor.dataStore = { data: [] };
       break;
-      
+  
       case "add":
         if (options.data) {
           editor.dataStore.data.push(options.data);
           resp = editor.dataStore;
         }
       break;
-      
+  
       case "save":
         // Store to our element
         editor.$el.val((editor.dataStore.data.length > 0) ? JSON.stringify(editor.dataStore) : '');
       break;
-      
+  
       case "read":
         resp = editor.dataStore;
       break;
-      
+  
     }
-    
+  
     if(resp) {
       return resp;
     }
-    
-  }; 
   
-  
+  };
   
   /* 
     SirTrevor.Submittable
@@ -410,7 +414,6 @@
       SirTrevor.log('onUploadStart called ' + this.globalUploadCount);
       
       if(this.globalUploadCount === 1) {
-        this.setSubmitButton(null, "Please wait...");
         this._disableSubmitButton();
       }
     },
@@ -422,7 +425,6 @@
       
       if(this.globalUploadCount === 0) {
         this._enableSubmitButton();
-        this.resetSubmitButton();
       }
     },
     
@@ -431,24 +433,28 @@
       this.canSubmit = false;
     },
     
-    _disableSubmitButton: function(){
+    _disableSubmitButton: function(message){
+      this.setSubmitButton(null, message || "Please wait...");
       this.submitBtn
         .attr('disabled', 'disabled')
         .addClass('disabled');
     },
     
     _enableSubmitButton: function(){
+      this.resetSubmitButton();
       this.submitBtn
         .removeAttr('disabled')
         .removeClass('disabled');
     },
     
     _bindEvents: function(){
-      $.subscribe("editor/setSubmitButton", _.bind(this.setSubmitButton, this));
-      $.subscribe("editor/resetSubmitButton", _.bind(this.resetSubmitButton, this));
-      $.subscribe("editor/onError", _.bind(this.onError, this));
-      $.subscribe("editor/onUploadStart", _.bind(this.onUploadStart, this));
-      $.subscribe("editor/onUploadStop", _.bind(this.onUploadStop, this));
+      SirTrevor.subscribe("disableSubmitButton", _.bind(this._disableSubmitButton, this));
+      SirTrevor.subscribe("enableSubmitButton", _.bind(this._enableSubmitButton, this));
+      SirTrevor.subscribe("setSubmitButton", _.bind(this.setSubmitButton, this));
+      SirTrevor.subscribe("resetSubmitButton", _.bind(this.resetSubmitButton, this));
+      SirTrevor.subscribe("onError", _.bind(this.onError, this));
+      SirTrevor.subscribe("onUploadStart", _.bind(this.onUploadStart, this));
+      SirTrevor.subscribe("onUploadStop", _.bind(this.onUploadStop, this));
     }
     
   });
@@ -461,9 +467,9 @@
   *   Generic Upload implementation that can be extended for blocks
   */
   
-  SirTrevor.fileUploader = function(block, file, callback) {
+  SirTrevor.fileUploader = function(block, file, success, error) {
     
-    $.publish("editor/onUploadStart");
+    SirTrevor.publish("onUploadStart");
     
     var uid  = [block.instance.ID, (new Date()).getTime(), 'raw'].join('-');
     
@@ -474,10 +480,18 @@
     data.append('attachment[uid]', uid);
     
     var callbackSuccess = function(data){
-      if (!_.isUndefined(callback) && _.isFunction(callback)) {
+      if (!_.isUndefined(success) && _.isFunction(success)) {
         SirTrevor.log('Upload callback called');
-        $.publish("editor/onUploadStop");
-        _.bind(callback, block)(data); // Invoke with a reference to 'this' (the block)
+        SirTrevor.publish("onUploadStop");
+        _.bind(success, block)(data);
+      }
+    };
+    
+    var callbackError = function(jqXHR, status, errorThrown){
+      if (!_.isUndefined(error) && _.isFunction(error)) {
+        SirTrevor.log('Upload callback error called');
+        SirTrevor.publish("onUploadError");
+        _.bind(error, block)(status); 
       }
     };
     
@@ -488,7 +502,8 @@
       contentType: false,
       processData: false,
       type: 'POST',
-      success: callbackSuccess
+      success: callbackSuccess,
+      error: callbackError
     });
     
   };
@@ -503,10 +518,15 @@
     isURI : function(string) {
       return (url_regex.test(string));
     },
-    
+  
     capitalize : function(string) {
       return string.charAt(0).toUpperCase() + string.substring(1).toLowerCase();
+    },
+  
+    trim : function(string) {
+      return string.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
     }
+  
   });
   
   
@@ -531,7 +551,8 @@
   
   var blockOptions = [
     "className", 
-    "toolbarEnabled", 
+    "toolbarEnabled",
+  	"formattingEnabled",
     "dropEnabled", 
     "title", 
     "limit", 
@@ -568,6 +589,7 @@
     dropzoneHTML: '<div class="dropzone"><p>Drop content here</p></div>',
     toolbarEnabled: true,
     dropEnabled: false,
+  	formattingEnabled: true,
     
     initialize: function() {},
     
@@ -642,8 +664,9 @@
         this._initFormatting();
       }
       
-      // Focus if we're adding an empty block
-      if (_.isEmpty(currentData.data)) {
+      // Focus if we're adding an empty block, but only if not
+  		// the only block (i.e. page has just loaded a new editor)
+      if (_.isEmpty(currentData.data) && this.instance.blocks.length > 0) {
         var inputs = this.$$('[contenteditable="true"], input');
         if (inputs.length > 0 && !this.dropEnabled) {
           inputs[0].focus();
@@ -703,24 +726,27 @@
     /* Generic implementations */
     
     validate: function() {
+      
+      this._beforeValidate();
+      
       var fields = this.$$('.required, [data-maxlength]'),
           errors = 0;
           
       _.each(fields, _.bind(function(field) {
         field = $(field);
         var content = (field.attr('contenteditable')) ? field.text() : field.val(),
-            too_long = (field.attr('data-maxlength') && field.too_long());
+            too_long = (field.attr('data-maxlength') && field.too_long()),
+            required = field.hasClass('required');
   
-        if (content.length === 0 || too_long) {
+        if ((required && content.length === 0) || too_long) {
           // Error!
-          field.addClass('error').before($("<div>", {
+          field.addClass(this.instance.options.errorClass).before($("<div>", {
             'class': 'error-marker',
             'html': '!'
           }));
           errors++;
         } 
       }, this));
-      
       
       return (errors === 0);
     },
@@ -797,13 +823,15 @@
     onBlockFocus: function(ev) {
       _.delay(_.bind(function(){
         this.instance.formatBar.clicked = false;
-        this.instance.formatBar.show(this.$el);
+        if(this.formattingEnabled) {
+  				this.instance.formatBar.show(this.$el);
+  			}
       }, this), 250);
     },
     
     onBlockBlur: function(ev) {
       _.delay(_.bind(function(){
-          if(!this.instance.formatBar.clicked) {
+          if(!this.instance.formatBar.clicked && this.formattingEnabled) {
             this.instance.formatBar.hide();
           }
       }, this), 250);
@@ -819,7 +847,7 @@
     onContentPasted: function(ev){
       var textBlock = this.$$('.text-block');
       if (textBlock.length > 0) {
-        textBlock.html(this.instance._toHTML(this.instance._toMarkdown(textBlock.html(), this.type)));
+        textBlock.html(this.instance._toHTML(this.instance._toMarkdown(textBlock.html(), this.type),this.type));
       }
     },
     
@@ -845,15 +873,16 @@
         this.$editor.show();
       }
       
+      SirTrevor.publish("editor/block/loadData");
+      
       this.loadData(this.getData());
       this.ready();
     },
     
-    _validate: function() {
+    _beforeValidate: function() {
       this.errors = []; 
       this.$('.error').removeClass('error');
       this.$('.error-marker').remove();
-      return this.validate();
     },
     
     _handleContentPaste: function(ev) {
@@ -869,6 +898,8 @@
       
       e.preventDefault();
       e = e.originalEvent;
+      
+      SirTrevor.publish("editor/block/handleDrop");
     
       var el = $(e.target),
           types = e.dataTransfer.types,
@@ -1070,7 +1101,7 @@
     title: "Gallery",
     className: "gallery",
     dropEnabled: true,
-    editorHTML: "<div class=\"gallery-items\"><p>Gallery contents: </p><ul></ul></div>",
+    editorHTML: "<div class=\"gallery-items\"><p>Gallery Contents:</p><ul></ul></div>",
     dropzoneHTML: dropzone_templ,
     
     loadData: function(data){
@@ -1108,14 +1139,7 @@
           
           if (confirm('Are you sure you wish to delete this image?')) {
             $(e.target).parent().remove();
-          
-            var dataStruct = this.$el.data('block');
-            dataStruct.data = [];
-          
-            _.each(this.$('li.gallery-item'), function(li){
-              li = $(li);
-              dataStruct.data.push(li.data('block'));
-            });
+            this.reindexData();
           }
         }, this)
       }));
@@ -1171,13 +1195,7 @@
           }
           
           // Reindex the data
-          var dataStruct = this.$el.data('block');
-          dataStruct.data = [];
-          
-          _.each(this.$$('li.gallery-item'), function(li){
-            li = $(li);
-            dataStruct.data.push(li.data('block'));
-          });
+          this.reindexData();
                   
         }, this));
     },
@@ -1189,6 +1207,18 @@
         this.$dropzone.find('input').on('change', _.bind(function(ev){
           this.onDrop(ev.currentTarget);
         }, this));
+    },
+    
+    reindexData: function() {
+      var dataStruct = this.getData();
+      dataStruct = [];
+  
+      _.each(this.$$('li.gallery-item'), function(li){
+        li = $(li);
+        dataStruct.push(li.data('block'));
+      });
+      
+      this.setData(dataStruct);
     },
     
     onDrop: function(transferData){
@@ -1279,13 +1309,19 @@
         this.$editor.show();
         
         // Upload!
-        $.publish('editor/setSubmitButton', ['Please wait...']); 
-        this.uploader(file, function(data){
-          // Store the data on this block
-          this.setData(data);
-          // Done
-          this.ready();
-        });
+        SirTrevor.publish('setSubmitButton', ['Please wait...']); 
+        this.uploader(
+          file, 
+          function(data){
+            // Store the data on this block
+            this.setData(data);
+            // Done
+            this.ready();
+          },
+          function(error){
+            alert('Error!');
+          }
+        );
       }
     }
   });
@@ -1371,7 +1407,7 @@
             
             // Make our AJAX call
             $.ajax({
-              url: "http://api.twitter.com/1/statuses/show/" + tweetID + ".json",
+              url: "//api.twitter.com/1/statuses/show/" + tweetID + ".json",
               dataType: "JSONP",
               success: _.bind(tweetCallbackSuccess, this),
               error: _.bind(tweetCallbackFail, this)
@@ -1428,8 +1464,14 @@
     },
     
     toHTML: function(html) {
-      return html.replace(/^ - (.+)$/mg,"<li>$1</li>");
+  		html = html.replace(/^ - (.+)$/mg,"<li>$1</li>")
+  							 .replace(/\n/mg,"");
+  							
+  		html = "<ul>" + html + "</ul>"
+  		
+  		return html
     }
+  
   });
   
   var video_drop_template = '<p>Drop video link here</p><div class="input text"><label>or paste URL:</label><input type="text" class="paste-block"></div>';
@@ -1897,7 +1939,7 @@
       } else {
         // We have data. Build our blocks from here.
         _.each(store.data, _.bind(function(block){
-          console.log('Creating: ', block);
+          SirTrevor.log('Creating: ', block);
           this.createBlock(block.type, block.data);
         }, this));
       }
@@ -1957,6 +1999,8 @@
           .addClass('inactive')
           .attr('title','You have reached the limit for this type of block');
        } 
+       
+       SirTrevor.publish("editor/block/createBlock");
         
        SirTrevor.log("Block created of type " + type);
       } else {
@@ -1975,6 +2019,8 @@
       if(_.isUndefined(this.blocks)) this.blocks = [];
       this.formatBar.hide();
       
+      SirTrevor.publish("editor/block/removeBlock");
+      
       // Remove our inactive class if it's no longer relevant
       if(this._getBlockTypeLimit(block.type) > this.blockCounts[block.type]) {
         SirTrevor.log("Removing block limit for " + block.type);
@@ -1984,11 +2030,39 @@
       }
     },
     
+    performValidations : function(_block, should_validate) {
+      
+      var errors = 0;
+      
+      if (!SirTrevor.SKIP_VALIDATION && should_validate) {
+        if(!_block.validate()){
+          // fail validations
+          SirTrevor.log("Block " + _block.blockID + " failed validation");
+          ++errors;
+        }
+      } else {
+        // not validating so clear validation warnings
+        _block._beforeValidate();
+      }
+      
+      // success
+      var store = _block.save();
+      if(!_.isEmpty(store.data)) {
+        SirTrevor.log("Adding data for block " + _block.blockID + " to block store");
+        this.store("add", this, { data: store });
+      }
+      return errors;
+    },
+    
     /*
       Handle a form submission of this Editor instance.
       Validate all of our blocks, and serialise all data onto the JSON objects
     */
-    onFormSubmit: function() {
+    onFormSubmit: function(should_validate) {
+      
+      // if undefined or null or anything other than false - treat as true
+      should_validate = (should_validate === false) ? false : true;
+      
       SirTrevor.log("Handling form submission for Editor " + this.ID);
       
       var blockLength, block, result, errors = 0;
@@ -2006,25 +2080,16 @@
         
         if (!_.isUndefined(_block) || !_.isEmpty(_block) || typeof _block == SirTrevor.Block) {
           // Validate our block
-          if(_block._validate() || SirTrevor.SKIP_VALIDATION)
-          {
-            var store = _block.save();
-            if(!_.isEmpty(store.data)) {
-              SirTrevor.log("Adding data for block " + _block.blockID + " to block store");
-              this.store("add", this, { data: store });
-            }
-          } else { 
-            SirTrevor.log("Block " + _block.blockID + " failed validation");
-            errors++;
-          }
+          errors += this.performValidations(_block, should_validate);
         }
         
       };
       _.each(this.$wrapper.find('.' + this.options.baseCSSClass + "-block"), _.bind(blockIterator, this));
   
       // Validate against our required fields (if there are any)
-      if (this.required && !SirTrevor.SKIP_VALIDATION) {
+      if (this.required && (!SirTrevor.SKIP_VALIDATION && should_validate)) {
         _.each(this.required, _.bind(function(type) {
+        
           if (this._blockTypeAvailable(type)) {
             // Valid block type to validate against
             if (_.isUndefined(this.blockCounts[type]) || this.blockCounts[type] === 0) {
@@ -2130,7 +2195,7 @@
       // Wrap our element in lots of containers *eww*
       this.$el.wrap($('<div>', { 
                       id: this.ID,
-                      'class': this.options.baseCSSClass + " " + this.options.baseCSSClass + "_dragleave",
+                      'class': this.options.baseCSSClass,
                       dropzone: 'copy link move'
                     })
                   )
@@ -2184,6 +2249,16 @@
           }
         }
       }
+  
+      // Do our generic stripping out
+      markdown = markdown.replace(/([^<>]+)(<div>)/g,"$1\n\n$2")                                 // Divitis style line breaks (handle the first line)
+                     .replace(/(?:<div>)([^<>]+)(?:<div>)/g,"$1\n\n")                            // ^ (handle nested divs that start with content)
+                     .replace(/(?:<div>)(?:<br>)?([^<>]+)(?:<br>)?(?:<\/div>)/g,"$1\n\n")        // ^ (handle content inside divs)
+                     .replace(/<\/p>/g,"\n\n\n\n")                                               // P tags as line breaks
+                     .replace(/<(.)?br(.)?>/g,"\n\n")                                            // Convert normal line breaks
+                     .replace(/&nbsp;/g," ")                                                     // Strip white-space entities 
+                     .replace(/&lt;/g,"<").replace(/&gt;/g,">");                                 // Encoding
+  
       
       // Use custom block toMarkdown functions (if any exist)
       var block;
@@ -2194,17 +2269,11 @@
           markdown = block.prototype.toMarkdown(markdown);
         }
       }
-       
-      // Do our generic stripping out
-      markdown = markdown.replace(/([^<>]+)(<div>)/g,"$1\n\n$2")                                 // Divitis style line breaks (handle the first line)
-                     .replace(/(?:<div>)([^<>]+)(?:<div>)/g,"$1\n\n")                            // ^ (handle nested divs that start with content)
-                     .replace(/(?:<div>)(?:<br>)?([^<>]+)(?:<br>)?(?:<\/div>)/g,"$1\n\n")        // ^ (handle content inside divs)
-                     .replace(/<\/p>/g,"\n\n\n\n")                                               // P tags as line breaks
-                     .replace(/<(.)?br(.)?>/g,"\n\n")                                            // Convert normal line breaks
-                     .replace(/&nbsp;/g," ")                                                     // Strip white-space entities 
-                     .replace(/&lt;/g,"<").replace(/&gt;/g,">")                                  // Encoding
-                     .replace(/<\/?[^>]+(>|$)/g, "");                                            // Strip remaining HTML
-                     
+      
+  		// Strip remaining HTML
+  		markdown = markdown.replace(/<\/?[^>]+(>|$)/g, "");                                            
+      
+          
       return markdown;
     },
     
@@ -2220,7 +2289,7 @@
       for(formatName in this.formatters) {
         if (SirTrevor.Formatters.hasOwnProperty(formatName)) {
           format = SirTrevor.Formatters[formatName];
-          // Do we have a toMarkdown function?
+          // Do we have a toHTML function?
           if (!_.isUndefined(format.toHTML) && _.isFunction(format.toHTML)) {
             html = format.toHTML(html);
           }
@@ -2230,8 +2299,9 @@
       // Use custom block toHTML functions (if any exist)
       var block;
       if (SirTrevor.Blocks.hasOwnProperty(type)) {
+  			
         block = SirTrevor.Blocks[type];
-        // Do we have a toMarkdown function?
+        // Do we have a toHTML function?
         if (!_.isUndefined(block.prototype.toHTML) && _.isFunction(block.prototype.toHTML)) {
           html = block.prototype.toHTML(html);
         }
@@ -2239,9 +2309,9 @@
       
       html =  html.replace(/^\> (.+)$/mg,"$1")                                       // Blockquotes
                   .replace(/\n\n/g,"<br>")                                           // Give me some <br>s
-                  .replace(/\[(.+)\]\((.+)\)/g,"<a href='$2'>$1</a>")                 // Links
-                  .replace(/(?:_)([^*|_]+)(?:_)/mg,"<i>$1</i>")                   // Italic
-                  .replace(/(?:\*\*)([^*|_]+)(?:\*\*)/mg,"<b>$1</b>");                // Bold
+                  .replace(/\[([^\]]+)\]\(([^\)]+)\)/g,"<a href='$2'>$1</a>")        // Links
+                  .replace(/(?:_)([^*|_(http)]+)(?:_)/g,"<i>$1</i>")                 // Italic, avoid italicizing two links with underscores next to each other
+                  .replace(/(?:\*\*)([^*|_]+)(?:\*\*)/g,"<b>$1</b>");                // Bold
          
       return html;  
     }
@@ -2259,26 +2329,35 @@
     }
   };
   
-  SirTrevor.onFormSubmit = function(ev) {
+  SirTrevor.onBeforeSubmit = function(should_validate) {
     // Loop through all of our instances and do our form submits on them
     var errors = 0;
     _.each(SirTrevor.instances, function(inst, i) {
-      errors += inst.onFormSubmit();
+      errors += inst.onFormSubmit(should_validate);
     });
-    
     SirTrevor.log("Total errors: " + errors);
     
+    return errors;
+  };
+  
+  SirTrevor.onFormSubmit = function(ev) {
+    var errors = SirTrevor.onBeforeSubmit();
+    
     if(errors > 0) {
+      SirTrevor.publish("onError");
       ev.preventDefault();
     } 
   };
   
   SirTrevor.runOnAllInstances = function(method) {
     if (_.has(SirTrevor.Editor.prototype, method)) {
-      _.invoke(SirTrevor.instances, method);
+      // augment the arguments pseudo array and pass on to invoke()
+      // this allows us to pass arguments on to the target methods
+      [].unshift.call(arguments, SirTrevor.instances);
+      _.invoke.apply(_, arguments);
     } else {
       SirTrevor.log("method doesn't exist");
     }
   };
-
+  
 }(jQuery, _));
