@@ -8,14 +8,14 @@ module SirTrevor
       def render_sir_trevor(json, image_type = 'large')
         if hash = parse_sir_trevor(json)
           hash.map { |object|
-            render_block(object, image_type)
+            render_sir_trevor_block(object, image_type)
           }.compact.join.html_safe
         else
           ''
         end
       end
 
-      def render_block(object, image_type = 'large')
+      def render_sir_trevor_block(object, image_type = 'large')
         view_name = "sir-trevor/blocks/#{object['type'].to_s.downcase}_block"
 
         render(view_name,
