@@ -20,8 +20,7 @@ module SirTrevor
 
         render(view_name,
                :block => object['data'],
-               :image_type => image_type,
-               :protocol => request.protocol) if object.has_key?("data")
+               :image_type => image_type) if object.has_key?("data")
       end
 
       def render_sir_trevor_image(json, image_type = "large")
