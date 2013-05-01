@@ -5,16 +5,23 @@ module SirTrevor
       extend ActiveSupport::Concern
       include Twitter::Autolink
   
-      def render_sir_trevor(json, image_type = "large")
-        hash = JSON.parse(json)
-
-        if hash.has_key?("data")
-          hash["data"].map { |object|
-            render(:partial => "sir-trevor/blocks/#{object["type"].to_s.downcase}_block", :locals => { :block => object['data'], :image_type => image_type, :protocol => request.protocol} ) if object.has_key?("data")
+      def render_sir_trevor(json, image_type = 'large')
+        if hash = parse_sir_trevor(json)
+          hash.map { |object|
+            render_sir_trevor_block(object, image_type)
           }.compact.join.html_safe
         else
           ''
         end
+      end
+
+      def render_sir_trevor_block(object, image_type = 'large')
+        view_name = "sir-trevor/blocks/#{object['type'].to_s.downcase}_block"
+
+        render(view_name,
+               :block => object['data'],
+               :image_type => image_type,
+               :protocol => request.protocol) if object.has_key?("data")
       end
 
       def render_sir_trevor_image(json, image_type = "large")
@@ -52,6 +59,13 @@ module SirTrevor
         renderer = Redcarpet::Render::HTML.new(options)
         markdown = Redcarpet::Markdown.new(CustomMarkdownFormatter)
         markdown.render(text).html_safe
+      end
+
+      def parse_sir_trevor(json)
+        hash = JSON.parse(json)
+
+        return false unless hash.has_key?("data")
+        hash["data"]
       end
 
       private
