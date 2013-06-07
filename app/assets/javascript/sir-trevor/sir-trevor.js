@@ -374,52 +374,6 @@
   };
   //fgnass.github.com/spin.js#v1.2.5
   (function(a,b,c){function g(a,c){var d=b.createElement(a||"div"),e;for(e in c)d[e]=c[e];return d}function h(a){for(var b=1,c=arguments.length;b<c;b++)a.appendChild(arguments[b]);return a}function j(a,b,c,d){var g=["opacity",b,~~(a*100),c,d].join("-"),h=.01+c/d*100,j=Math.max(1-(1-a)/b*(100-h),a),k=f.substring(0,f.indexOf("Animation")).toLowerCase(),l=k&&"-"+k+"-"||"";return e[g]||(i.insertRule("@"+l+"keyframes "+g+"{"+"0%{opacity:"+j+"}"+h+"%{opacity:"+a+"}"+(h+.01)+"%{opacity:1}"+(h+b)%100+"%{opacity:"+a+"}"+"100%{opacity:"+j+"}"+"}",0),e[g]=1),g}function k(a,b){var e=a.style,f,g;if(e[b]!==c)return b;b=b.charAt(0).toUpperCase()+b.slice(1);for(g=0;g<d.length;g++){f=d[g]+b;if(e[f]!==c)return f}}function l(a,b){for(var c in b)a.style[k(a,c)||c]=b[c];return a}function m(a){for(var b=1;b<arguments.length;b++){var d=arguments[b];for(var e in d)a[e]===c&&(a[e]=d[e])}return a}function n(a){var b={x:a.offsetLeft,y:a.offsetTop};while(a=a.offsetParent)b.x+=a.offsetLeft,b.y+=a.offsetTop;return b}var d=["webkit","Moz","ms","O"],e={},f,i=function(){var a=g("style");return h(b.getElementsByTagName("head")[0],a),a.sheet||a.styleSheet}(),o={lines:12,length:7,width:5,radius:10,rotate:0,color:"#000",speed:1,trail:100,opacity:.25,fps:20,zIndex:2e9,className:"spinner",top:"auto",left:"auto"},p=function q(a){if(!this.spin)return new q(a);this.opts=m(a||{},q.defaults,o)};p.defaults={},m(p.prototype,{spin:function(a){this.stop();var b=this,c=b.opts,d=b.el=l(g(0,{className:c.className}),{position:"relative",zIndex:c.zIndex}),e=c.radius+c.length+c.width,h,i;a&&(a.insertBefore(d,a.firstChild||null),i=n(a),h=n(d),l(d,{left:(c.left=="auto"?i.x-h.x+(a.offsetWidth>>1):c.left+e)+"px",top:(c.top=="auto"?i.y-h.y+(a.offsetHeight>>1):c.top+e)+"px"})),d.setAttribute("aria-role","progressbar"),b.lines(d,b.opts);if(!f){var j=0,k=c.fps,m=k/c.speed,o=(1-c.opacity)/(m*c.trail/100),p=m/c.lines;!function q(){j++;for(var a=c.lines;a;a--){var e=Math.max(1-(j+a*p)%m*o,c.opacity);b.opacity(d,c.lines-a,e,c)}b.timeout=b.el&&setTimeout(q,~~(1e3/k))}()}return b},stop:function(){var a=this.el;return a&&(clearTimeout(this.timeout),a.parentNode&&a.parentNode.removeChild(a),this.el=c),this},lines:function(a,b){function e(a,d){return l(g(),{position:"absolute",width:b.length+b.width+"px",height:b.width+"px",background:a,boxShadow:d,transformOrigin:"left",transform:"rotate("+~~(360/b.lines*c+b.rotate)+"deg) translate("+b.radius+"px"+",0)",borderRadius:(b.width>>1)+"px"})}var c=0,d;for(;c<b.lines;c++)d=l(g(),{position:"absolute",top:1+~(b.width/2)+"px",transform:b.hwaccel?"translate3d(0,0,0)":"",opacity:b.opacity,animation:f&&j(b.opacity,b.trail,c,b.lines)+" "+1/b.speed+"s linear infinite"}),b.shadow&&h(d,l(e("#000","0 0 4px #000"),{top:"2px"})),h(a,h(d,e(b.color,"0 0 1px rgba(0,0,0,.1)")));return a},opacity:function(a,b,c){b<a.childNodes.length&&(a.childNodes[b].style.opacity=c)}}),!function(){function a(a,b){return g("<"+a+' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">',b)}var b=l(g("group"),{behavior:"url(#default#VML)"});!k(b,"transform")&&b.adj?(i.addRule(".spin-vml","behavior:url(#default#VML)"),p.prototype.lines=function(b,c){function f(){return l(a("group",{coordsize:e+" "+e,coordorigin:-d+" "+ -d}),{width:e,height:e})}function k(b,e,g){h(i,h(l(f(),{rotation:360/c.lines*b+"deg",left:~~e}),h(l(a("roundrect",{arcsize:1}),{width:d,height:c.width,left:c.radius,top:-c.width>>1,filter:g}),a("fill",{color:c.color,opacity:c.opacity}),a("stroke",{opacity:0}))))}var d=c.length+c.width,e=2*d,g=-(c.width+c.length)*2+"px",i=l(f(),{position:"absolute",top:g,left:g}),j;if(c.shadow)for(j=1;j<=c.lines;j++)k(j,-2,"progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");for(j=1;j<=c.lines;j++)k(j);return h(b,i)},p.prototype.opacity=function(a,b,c,d){var e=a.firstChild;d=d.shadow&&d.lines||0,e&&b+d<e.childNodes.length&&(e=e.childNodes[b+d],e=e&&e.firstChild,e=e&&e.firstChild,e&&(e.opacity=c))}):f=k(b,"animation")}(),a.Spinner=p})(window,document);
-  /* Soft character limits on inputs and textareas */
-
-  (function($){
-
-    $.fn.limit_chars = function() {
-
-      if (this.length===0) return;
-
-      // Remove browser maxlength, add soft limit
-      if(this.attr('maxlength')) {
-        this.attr('data-maxlength',this.attr('maxlength'));
-        this.removeAttr('maxlength');
-      }
-
-      if(this.parents('.extended_input').length === 0) {
-
-        count = (this.chars()<this.attr('data-maxlength')) ? this.chars() : '<em>'+this.chars()+'</em>';
-
-        // Build UI
-        this.wrap($('<div>',{
-          "class": "extended_input"
-        })).after($('<span>', {
-          "class": "count",
-          html: count+' of '+this.attr('data-maxlength')
-        }));
-
-        // Attach event
-        this.bind('keydown keyup paste',function(ev){
-          count = ($(this).chars()<$(this).attr('data-maxlength')) ? $(this).chars() : '<em>'+$(this).chars()+'</em>';
-          $(this).parent().find('.count').html(count+' of '+$(this).attr('data-maxlength'));
-        });
-
-      }
-
-    };
-
-    $.fn.chars = function() {
-      count = (this.attr('contenteditable')!==undefined) ? this.text().length : this.val().length;
-      return count;
-    };
-
-    $.fn.too_long = function() {
-      return this.chars() > this.attr('data-maxlength');
-    };
-
-  })(jQuery);
   /*
   * Sir Trevor Block Store
   * By default we store the data on the instance
@@ -827,8 +781,6 @@
         delegate it away to our blockTypes to process
       */
 
-      console.log(types, e.dataTransfer);
-
       if (!_.isUndefined(types) &&
         _.some(types, function(type){ return _.include(this.valid_drop_file_types, type); }, this)) {
         this.onDrop(e.dataTransfer);
@@ -838,29 +790,13 @@
     }
 
   };
-  /* Adds paste functionaltiy to this block */
-
-  var Pastable = SirTrevor.BlockMixins.Pastable = {
-
-    name: "Pastable",
-
-    initializePastable: function() {
-
-    }
-
-  };
-  /* Adds upload functionaltiy to this block */
-
-  var Uploadable = SirTrevor.BlockMixins.Uploadable = {
-    name: "Uploadable",
-    initializeUploadable: function() {}
-  };
   var BlockReorder = SirTrevor.BlockReorder = function(block_element) {
     this.$block = block_element;
 
     this._ensureElement();
     this._bindFunctions();
-    this.initialize.apply(this, arguments);
+    this.initialize();
+
   };
 
   _.extend(BlockReorder.prototype, FunctionBind, Renderable, {
@@ -879,8 +815,8 @@
 
     initialize: function() {
       this.$el.bind('dragstart', this.onDragStart)
-              .bind('dragend', this.onDragEnd)
-              .bind('drag', this.onDrag);
+              .bind('dragend touchend', this.onDragEnd)
+              .bind('drag touchmove', this.onDrag);
 
       this.$block.dropArea()
                  .bind('drop', this.onDrop);
@@ -901,10 +837,11 @@
         dropped_on.after(block);
       }
 
-      SirTrevor.EventBus.trigger("block:reorder:drop");
+      SirTrevor.EventBus.trigger("block:reorder:dropped", item_id);
     },
 
     onDragStart: function(ev) {
+
       var item = $(ev.target),
           block = item.parents('.st-block');
 
@@ -973,7 +910,6 @@
     "onContentPasted",
     "onBlockRender",
     "beforeBlockRender",
-    "setTextLimit",
     "toMarkdown",
     "toHTML"
   ];
@@ -981,6 +917,7 @@
   var default_drop_options = {
     uploadable: false,
     pastable: false,
+    re_render_on_reorder: false,
     drop_html: '<div class="st-block__dropzone"><span class="st-icon"><%= icon_name() %></span><p>Drag <span><%= type %></span> here</p></div>',
     upload_html: '<div class="st-block__upload-container"><input type="file" type="st-file-upload" /><button class="st-upload-btn">...or choose a file</button></div>',
     paste_html: '<input type="text" placeholder="Or paste URL here" class="st-block__paste-input st-paste-block">'
@@ -994,6 +931,8 @@
     block_template: _.template(
       "<div class='st-block__inner'><%= editor_html %></div>"
     ),
+
+    drop_options: default_drop_options,
 
     attributes: function() {
       return {
@@ -1040,10 +979,9 @@
 
     initialize: function() {},
 
-    loadData: function(data) {},
+    loadData: function() {},
     onBlockRender: function(){},
     beforeBlockRender: function(){},
-    setTextLimit: function() {},
     toMarkdown: function(markdown){ return markdown; },
     toHTML: function(html){ return html; },
 
@@ -1076,11 +1014,11 @@
 
       this.$inner.bind('click mouseover', function(e){ e.stopPropagation(); });
 
-      this._loadAndSetData();
-
       if (this.hasTextBlock) { this._initTextBlocks(); }
       if (this.droppable) { this.withMixin(SirTrevor.BlockMixins.Droppable); }
       if (this.formattingEnabled) { this._initFormatting(); }
+
+      this._loadAndSetData();
 
       this._initUIComponents();
       this._initPaste();
@@ -1192,11 +1130,6 @@
         if(input.val().length > 0 && hasTextAndData) {
           dataObj[input.attr('name')] = input.val();
         }
-      });
-
-      this.$$('input[type="file"]').each(function(index,input) {
-        input = $(input);
-        dataObj.file = input.data('json');
       });
 
       // Set
@@ -1464,7 +1397,8 @@
     droppable: true,
 
     drop_options: {
-      uploadable: true
+      uploadable: true,
+      upload_html: '<div class="st-block__upload-container"><input type="file" multiple="true" type="st-file-upload" /><button class="st-upload-btn">...or choose a file</button></div>'
     },
 
     editorHTML: "<div class=\"gallery-items\"><p>Gallery Contents:</p><ul></ul></div>",
@@ -1649,9 +1583,7 @@
 
     loadData: function(data){
       // Create our image tag
-      this.$editor.html($('<img>', {
-        src: data.file.url
-      }));
+      this.$editor.html($('<img>', { src: data.file.url }));
     },
 
     onBlockRender: function(){
@@ -1671,16 +1603,13 @@
         this.loading();
         // Show this image on here
         this.$dropzone.hide();
-        this.$editor.html($('<img>', {
-          src: urlAPI.createObjectURL(file)
-        }));
-        this.$editor.show();
+        this.$editor.html($('<img>', { src: urlAPI.createObjectURL(file) })).show();
 
         // Upload!
         SirTrevor.publish('setSubmitButton', ['Please wait...']);
         this.uploader(
           file,
-          function(data){
+          function(data) {
             // Store the data on this block
             this.setData(data);
             // Done
@@ -1720,14 +1649,18 @@
     type: "Tweet",
     droppable: true,
     drop_options: {
-      pastable: true
+      pastable: true,
+      re_render_on_reorder: true
     },
 
     icon_name: function() {
       return 'twitter';
     },
 
-    loadData: function(data){
+    loadData: function(data) {
+      if (_.isUndefined(data.status_url)) { data.status_url = ''; }
+
+      this.$inner.find('iframe').remove();
       this.$inner.prepend(_.template(tweet_template, data));
     },
 
@@ -1839,7 +1772,7 @@
     },
 
     loadData: function(data){
-      this.$editor.show().addClass('st-block__editor--with-sixteen-by-nine-media');
+      this.$editor.addClass('st-block__editor--with-sixteen-by-nine-media');
 
       if(data.source == "youtube" || data.source == "youtu") {
         this.$editor.html("<iframe src=\""+window.location.protocol+"//www.youtube.com/embed/" + data.remote_id + "\" width=\"580\" height=\"320\" frameborder=\"0\" allowfullscreen></iframe>");
@@ -2135,6 +2068,7 @@
           width = this.$el.width();
 
       if (rectangles.length == 1) {
+
         coords = {
           left: rectangles[0].left + ((rectangles[0].width - width) / 2),
           top: rectangles[0].top + this.$b.scrollTop()
@@ -2228,6 +2162,9 @@
       SirTrevor.EventBus.on("block:reorder:dragstart", this.hideBlockControls);
       SirTrevor.EventBus.on("block:reorder:dragend", this.removeBlockDragOver);
       SirTrevor.EventBus.on("block:content:dropped", this.removeBlockDragOver);
+
+      SirTrevor.EventBus.on("block:reorder:dropped", this.onBlockDropped);
+
       SirTrevor.EventBus.on("formatter:positon", this.formatBar.render_by_selection);
       SirTrevor.EventBus.on("formatter:hide", this.formatBar.hide);
 
@@ -2289,6 +2226,11 @@
     createBlock: function(type, data, render_at) {
       type = _.capitalize(type); // Proper case
 
+      if(this._blockLimitReached()) {
+        SirTrevor.log("Cannot add any more blocks. Limit reached.");
+        return false;
+      }
+
       if (!this._isBlockTypeAvailable(type)) {
         SirTrevor.log("Block type not available " + type);
         return false;
@@ -2326,6 +2268,14 @@
       this.$wrapper.find('.st-drag-over').removeClass('st-drag-over');
     },
 
+    onBlockDropped: function(block_id) {
+      var block = this.findBlockById(block_id);
+
+      if (!_.isUndefined(block) && block.drop_options.re_render_on_reorder) {
+          block._loadData();
+      }
+    },
+
     _renderInPosition: function(block) {
       if (this.block_controls.current_container) {
         this.block_controls.current_container.after(block);
@@ -2335,7 +2285,7 @@
     },
 
     _incrementBlockTypeCount: function(type) {
-      this.blockCounts[type] = (_.isUndefined(this.blockCounts[type])) ? 0 : this.blockCounts[type] + 1;
+      this.blockCounts[type] = (_.isUndefined(this.blockCounts[type])) ? 1: this.blockCounts[type] + 1;
     },
 
     _getBlockTypeCount: function(type) {
@@ -2346,6 +2296,10 @@
       var block_type_limit = this._getBlockTypeLimit(type);
 
       return !(block_type_limit !== 0 && this._getBlockTypeCount(type) > block_type_limit);
+    },
+
+    _blockLimitReached: function() {
+      return (this.options.blockLimit !== 0 && this.blocks.length >= this.options.blockLimit);
     },
 
     removeBlock: function(block_id, type) {
@@ -2360,7 +2314,7 @@
       block._beforeValidate();
 
       if (!SirTrevor.SKIP_VALIDATION && should_validate) {
-        if(!block.validate()){
+        if(!block.validate()){3
           this.errors.push({ text: _.result(block, 'validationFailMsg') });
           SirTrevor.log("Block " + block.blockID + " failed validation");
           ++errors;
@@ -2406,12 +2360,17 @@
       }
 
       var blockIterator = function(block,index) {
+        var _block = _.find(this.blocks, function(b) {
+          return (b.blockID == $(block).attr('id')); });
+
+        if (_.isUndefined(_block)) { return false; }
+
         // Find our block
-        this.performValidations(block, should_validate);
-        this.saveBlockStateToStore(block);
+        this.performValidations(_block, should_validate);
+        this.saveBlockStateToStore(_block);
       };
 
-      _.each(this.blocks, _.bind(blockIterator, this));
+      _.each(this.$wrapper.find('.st-block'), _.bind(blockIterator, this));
     },
 
     validateBlockTypesExist: function(should_validate) {
@@ -2461,10 +2420,13 @@
     removeErrors: function() {
       if (this.errors.length === 0) { return false; }
 
-      this.$errors.hide();
-      this.$errors.find('ul').html('');
+      this.$errors.hide().find('ul').html('');
 
       this.errors = [];
+    },
+
+    findBlockById: function(block_id) {
+      return _.find(this.blocks, function(b){ return b.blockID == block_id; });
     },
 
     /*
@@ -2475,7 +2437,7 @@
     _getBlockTypeLimit: function(t) {
       if (!this._isBlockTypeAvailable(t)) { return 0; }
 
-      return (_.isUndefined(this.options.blockTypeLimits[t])) ? 0 : this.options.blockTypeLimits[t];
+      return parseInt((_.isUndefined(this.options.blockTypeLimits[t])) ? 0 : this.options.blockTypeLimits[t], 10);
     },
 
     /*
@@ -2506,8 +2468,6 @@
       this.$outer = this.$form.find('#' + this.ID);
       this.$wrapper = this.$outer.find('.st-blocks');
 
-      console.log(this.$wrapper);
-
       return true;
     },
 
@@ -2527,6 +2487,9 @@
 
 
   /* We need a form handler here to handle all the form submits */
+  SirTrevor.setDefaults = function(options) {
+    SirTrevor.DEFAULTS = _.extend(SirTrevor.DEFAULTS, options || {});
+  };
 
   SirTrevor.bindFormSubmit = function(form) {
     if (!formBound) {
