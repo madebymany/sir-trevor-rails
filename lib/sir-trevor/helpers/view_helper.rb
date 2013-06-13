@@ -61,7 +61,7 @@ module SirTrevor
       end
 
       def parse_sir_trevor(json)
-        hash = json.is_a? Stirng ? JSON.parse(json) : json
+        hash = json.is_a? String ? JSON.parse(json) : json
         return false unless hash.has_key?("data")
         hash["data"]
       end
