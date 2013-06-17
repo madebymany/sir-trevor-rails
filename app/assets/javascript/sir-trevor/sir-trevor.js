@@ -868,7 +868,7 @@
 
     setData: function(data) {
       SirTrevor.log("Setting data for block " + this.blockID);
-      this.store("save", this, { data: data });
+      this.store("save", this, { data: _.extend(this.dataStore.data, data) });
     },
 
     loading: function() {
