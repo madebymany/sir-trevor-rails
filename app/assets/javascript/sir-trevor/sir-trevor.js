@@ -630,7 +630,8 @@
     attributes: function() {
       return {
         'html': 'reorder',
-        'draggable': 'true'
+        'draggable': 'true',
+        'data-icon': 'move'
       };
     },
 
@@ -657,7 +658,6 @@
       ) {
         dropped_on.after(block);
       }
-
       SirTrevor.EventBus.trigger("block:reorder:dropped", item_id);
     },
 
@@ -699,13 +699,14 @@
     className: 'st-block__remove st-icon',
 
     attributes: {
-      html: 'delete'
+      html: 'delete',
+      'data-icon': 'bin'
     }
 
   });
   var Block = SirTrevor.Block = function(data, instance_id) {
     this.store("create", this, { data: data || {} });
-    this.blockID = _.uniqueId(this.className + '-');
+    this.blockID = _.uniqueId('st-block-');
     this.instanceID = instance_id;
 
     this._ensureElement();
@@ -748,7 +749,8 @@
 
     bound: ["_handleDrop", "_handleContentPaste", "_onFocus", "_onBlur", "onDrop", "onDeleteClick"],
 
-    className: 'st-block',
+    className: 'st-block st-icon--add',
+
     block_template: _.template(
       "<div class='st-block__inner'><%= editor_html %></div>"
     ),
@@ -759,7 +761,8 @@
       return {
         'id': this.blockID,
         'data-type': this.type,
-        'data-instance': this.instanceID
+        'data-instance': this.instanceID,
+        'data-icon' : "add"
       };
     },
 
@@ -1456,14 +1459,14 @@
       this.$$('.st-text-block').html(SirTrevor.toHTML(data.text, this.type));
     }
   });
-  var tweet_template = [
+  var tweet_template = _.template([
     "<blockquote class='twitter-tweet' align='center'>",
     "<p><%= text %></p>",
     "&mdash; <%= user.name %> (@<%= user.screen_name %>)",
     "<a href='<%= status_url %>' data-datetime='<%= created_at %>'><%= created_at %></a>",
     "</blockquote>",
     '<script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>'
-  ].join("\n");
+  ].join("\n"));
 
   SirTrevor.Blocks.Tweet = SirTrevor.Block.extend({
 
@@ -1478,11 +1481,20 @@
       return 'twitter';
     },
 
+    default_data : {
+      text : "",
+      user : {
+        name : "",
+        screen_name : ""
+      },
+      status_url : "",
+      created_at : ""
+    },
+
     loadData: function(data) {
       if (_.isUndefined(data.status_url)) { data.status_url = ''; }
-
       this.$inner.find('iframe').remove();
-      this.$inner.prepend(_.template(tweet_template, data));
+      this.$inner.prepend(tweet_template(data));
     },
 
     onContentPasted: function(event){
@@ -1653,29 +1665,30 @@
 
   var Bold = SirTrevor.Formatter.extend({
     title: "bold",
-    className: "bold",
     cmd: "bold",
-    keyCode: 66
+    keyCode: 66,
+    text : "B"
   });
 
   var Italic = SirTrevor.Formatter.extend({
     title: "italic",
-    className: "italic",
     cmd: "italic",
-    keyCode: 73
+    keyCode: 73,
+    text : "i"
   });
 
   var Underline = SirTrevor.Formatter.extend({
     title: "underline",
-    className: "underline",
-    cmd: "underline"
+    cmd: "underline",
+    text : "U"
   });
 
   var Link = SirTrevor.Formatter.extend({
 
     title: "link",
-    className: "link",
+    iconName: "link",
     cmd: "CreateLink",
+    text : "link",
 
     onClick: function() {
 
@@ -1695,8 +1708,9 @@
 
   var UnLink = SirTrevor.Formatter.extend({
     title: "unlink",
-    className: "link",
-    cmd: "unlink"
+    iconName: "link",
+    cmd: "unlink",
+    text : "link",
   });
 
   /*
@@ -1756,6 +1770,8 @@
     block_controls: null,
 
     className: "st-block-controls",
+
+    html: "<a class='st-icon st-icon--close'>close</a>",
 
     initialize: function() {
       for(var block_type in this.available_types) {
@@ -1861,9 +1877,10 @@
       for (formatName in SirTrevor.Formatters) {
         if (SirTrevor.Formatters.hasOwnProperty(formatName)) {
           format = SirTrevor.Formatters[formatName];
+
           $("<button>", {
-            'class': 'st-format-btn st-icon st-format-btn--' + formatName,
-            'text': format.title,
+            'class': 'st-format-btn st-format-btn--' + formatName + ' ' + (format.iconName ? 'st-icon' : ''),
+            'text': format.text,
             'data-type': formatName,
             'data-cmd': format.cmd
           }).appendTo(this.$el);
@@ -2090,10 +2107,14 @@
     },
 
     onBlockDropped: function(block_id) {
+      this.hideAllTheThings();
       var block = this.findBlockById(block_id);
-
-      if (!_.isUndefined(block) && block.drop_options.re_render_on_reorder) {
-          block._loadData();
+      if (
+        !_.isUndefined(block) &&
+        block.dataStore.data.length > 0 &&
+        block.drop_options.re_render_on_reorder
+      ) {
+          block._loadData(block.dataStore);
       }
     },
 
