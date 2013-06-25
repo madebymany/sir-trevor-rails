@@ -1528,6 +1528,7 @@
                   screen_name: data.user.screen_name,
                   name: data.user.name
                 },
+                id: data.id,
                 text: data.text,
                 created_at: data.created_at,
                 status_url: url
@@ -2156,7 +2157,7 @@
       block._beforeValidate();
 
       if (!SirTrevor.SKIP_VALIDATION && should_validate) {
-        if(!block.validate()){3
+        if(!block.validate()){
           this.errors.push({ text: _.result(block, 'validationFailMsg') });
           SirTrevor.log("Block " + block.blockID + " failed validation");
           ++errors;
