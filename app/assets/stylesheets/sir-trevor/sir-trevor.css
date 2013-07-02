@@ -138,12 +138,15 @@
   position: relative; }
 
 .st-block__inner {
-  padding: 25px 30px 40px;
+  padding: 1.875em 1.875em 2.8em;
   border: 0.125em solid #fff;
   position: relative; }
 
 .st-block__inner:hover {
   border-color: #34e0c2; }
+
+.st-block--with-errors .st-block__inner {
+  border-color: #d70014; }
 
 .st-block--with-plus:after,
 .st-icon--add:after {
@@ -209,16 +212,26 @@ ul.st-text-block {
   line-height: 48px;
   font-size: 20px;
   color: #34e0c2;
+  background: #fff;
   text-align: center;
   border: 0.125em solid #34e0c2;
   border-right: 0;
   border-bottom: 0;
   cursor: pointer; }
 
+.st-block--with-errors .st-block__reorder,
+.st-block--with-errors .st-block__remove {
+  color: #d70014;
+  border-color: #d70014; }
+
 .st-block__reorder:hover,
 .st-block__remove:hover {
   color: #fff;
   background: #34e0c2; }
+
+.st-block--with-errors .st-block__reorder:hover,
+.st-block--with-errors .st-block__remove:hover {
+  background-color: #d70014; }
 
 .st-block__dropzone {
   padding: 1.6em 0 1em;
@@ -298,6 +311,56 @@ ul.st-text-block {
   width: 100%;
   padding: 7px 0;
   text-align: center; }
+
+.st-block-positioner {
+  border: 0.125em solid #34e0c2;
+  position: absolute;
+  z-index: 2;
+  left: -5.5em;
+  bottom: 0.4em;
+  background: #fff;
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transition: opacity 0.2s ease-in-out;
+  -moz-transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.2s ease-in-out; }
+
+.st-block-positioner--is-visible {
+  visibility: visible;
+  opacity: 1; }
+
+.st-block-positioner:after {
+  content: '';
+  display: block;
+  width: 0.4em;
+  height: 0.4em;
+  position: absolute;
+  z-index: 1;
+  right: -0.3em;
+  bottom: 0.6em;
+  border: 0.125em solid #34e0c2;
+  background: #fff;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg); }
+
+.st-block-positioner__title {
+  color: #34e0c2;
+  font-size: 0.7em;
+  font-style: italic;
+  font-weight: normal;
+  margin: 0;
+  border-bottom: 1px solid #34e0c2;
+  padding: 0.5em;
+  text-align: center; }
+
+.st-block-positioner__inner {
+  background: #fff;
+  position: relative;
+  z-index: 2;
+  padding: 0.3em 0.5em; }
 
 .st-format-bar {
   position: absolute;
