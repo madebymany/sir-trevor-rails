@@ -9,7 +9,7 @@
   var splice = array.splice;
 
   SirTrevor = root.SirTrevor = {};
-  SirTrevor.DEBUG = true;
+  SirTrevor.DEBUG = false;
   SirTrevor.SKIP_VALIDATION = false;
 
   /*
@@ -701,7 +701,7 @@
 
       bound: ['onMouseDown', 'onClick', 'onDragStart', 'onDragEnd', 'onDrag', 'onDrop'],
 
-      className: 'st-block__reorder st-icon',
+      className: 'st-block-ui-btn st-block-ui-btn--reorder st-icon',
       tagName: 'a',
 
       attributes: function() {
@@ -745,23 +745,18 @@
       },
 
       onDragStart: function(ev) {
+        var btn = $(ev.currentTarget).parent();
 
-        var item = $(ev.target),
-            block = item.parents('.st-block');
-
-        ev.originalEvent.dataTransfer.setDragImage(block[0], 0, 0);
-        ev.originalEvent.dataTransfer.setData('Text', block.attr('id'));
+        ev.originalEvent.dataTransfer.setDragImage(this.$block[0], btn.position().left, btn.position().top);
+        ev.originalEvent.dataTransfer.setData('Text', this.$block.attr('id'));
 
         SirTrevor.EventBus.trigger("block:reorder:dragstart");
-        block.addClass('st-block--dragging');
+        this.$block.addClass('st-block--dragging');
       },
 
       onDragEnd: function(ev) {
-        var item = $(ev.target),
-            block = item.parents('.st-block');
-
         SirTrevor.EventBus.trigger("block:reorder:dragend");
-        block.removeClass('st-block--dragging');
+        this.$block.removeClass('st-block--dragging');
       },
 
       onDrag: function(ev){},
@@ -788,7 +783,7 @@
     _.extend(BlockDeletion.prototype, FunctionBind, Renderable, {
 
       tagName: 'a',
-      className: 'st-block__remove st-icon',
+      className: 'st-block-ui-btn st-block-ui-btn--delete st-icon',
 
       attributes: {
         html: 'delete',
@@ -833,6 +828,14 @@
       "toMarkdown",
       "toHTML"
     ];
+
+    var delete_template = [
+      "<div class='st-block__ui-delete-controls'>",
+        "<label class='st-block__delete-label'>Delete?</label>",
+        "<a class='st-block-ui-btn st-block-ui-btn--confirm-delete st-icon' data-icon='tick'></a>",
+        "<a class='st-block-ui-btn st-block-ui-btn--deny-delete st-icon' data-icon='close'></a>",
+      "</div>"
+    ].join("\n");
 
     SirTrevor.DEFAULTS.default_drop_options = {
       uploadable: false,
@@ -1092,10 +1095,24 @@
       onDeleteClick: function(ev) {
         ev.preventDefault();
 
-        if (confirm('Are you sure you wish to delete this content?')) {
-          this.remove();
-          this.trigger('removeBlock', this.blockID, this.type);
-        }
+        this.$inner.append(delete_template);
+        this.$el.addClass('st-block--delete-active');
+
+        var $delete_el = this.$inner.find('.st-block__ui-delete-controls');
+
+        var onDeleteConfirm = function(e) {
+          e.preventDefault();
+          this.trigger('removeBlock', this.blockID);
+        };
+
+        var onDeleteDeny = function(e) {
+          e.preventDefault();
+          this.$el.removeClass('st-block--delete-active');
+          $delete_el.remove();
+        };
+
+        this.$inner.on('click', '.st-block-ui-btn--confirm-delete', _.bind(onDeleteConfirm, this))
+                   .on('click', '.st-block-ui-btn--deny-delete', _.bind(onDeleteDeny, this));
       },
 
       onContentPasted: function(ev){
@@ -1158,6 +1175,7 @@
 
       _initUIComponents: function() {
         var ui_element = $("<div>", { 'class': 'st-block__ui' });
+
         this.$inner.append(ui_element);
         this.$ui = ui_element;
 
@@ -1168,8 +1186,8 @@
         this.$ui.append(new SirTrevor.BlockDeletion().render().$el);
         this.$ui.append(positioner.render().$el);
 
-        this.$ui.on('click', '.st-block__remove', this.onDeleteClick);
-        this.$ui.on('click', '.st-block__reorder', positioner.toggle);
+        this.$ui.on('click', '.st-block-ui-btn--delete', this.onDeleteClick);
+        this.$ui.on('click', '.st-block-ui-btn--reorder', positioner.toggle);
 
         this.onFocus();
         this.onBlur();
@@ -1999,7 +2017,8 @@
 
     _.extend(SirTrevorEditor.prototype, FunctionBind, SirTrevor.Events, {
 
-      bound: ['onFormSubmit', 'showBlockControls', 'hideAllTheThings', 'onNewBlockCreated', 'changeBlockPosition'],
+      bound: ['onFormSubmit', 'showBlockControls', 'hideAllTheThings',
+              'onNewBlockCreated', 'changeBlockPosition', 'onBlockDragStart', 'onBlockDragEnd'],
 
       initialize: function() {},
       /*
@@ -2018,8 +2037,8 @@
         this.listenTo(this.fl_block_controls, 'showBlockControls', this.showBlockControls);
 
         SirTrevor.EventBus.on("block:reorder:down", this.hideBlockControls);
-        SirTrevor.EventBus.on("block:reorder:dragstart", this.hideBlockControls);
-        SirTrevor.EventBus.on("block:reorder:dragend", this.removeBlockDragOver);
+        SirTrevor.EventBus.on("block:reorder:dragstart", this.onBlockDragStart);
+        SirTrevor.EventBus.on("block:reorder:dragend", this.onBlockDragEnd);
         SirTrevor.EventBus.on("block:content:dropped", this.removeBlockDragOver);
 
         SirTrevor.EventBus.on("block:reorder:dropped", this.onBlockDropped);
@@ -2170,6 +2189,16 @@
         }
       },
 
+      onBlockDragStart: function() {
+        this.hideBlockControls();
+        this.$wrapper.addClass("st-outer--is-reordering");
+      },
+
+      onBlockDragEnd: function() {
+        this.removeBlockDragOver();
+        this.$wrapper.removeClass("st-outer--is-reordering");
+      },
+
       _renderInPosition: function(block) {
         if (this.block_controls.current_container) {
           this.block_controls.current_container.after(block);
@@ -2196,9 +2225,20 @@
         return (this.options.blockLimit !== 0 && this.blocks.length >= this.options.blockLimit);
       },
 
-      removeBlock: function(block_id, type) {
-        this.blockCounts[type] = this.blockCounts[type] - 1;
-        this.blocks = _.reject(this.blocks, function(item){ return (item.blockID == block_id); });
+      removeBlock: function(block_id) {
+        var block = this.findBlockById(block_id),
+            controls = block.$el.find('.st-block-controls');
+
+        if (controls.length) {
+          this.block_controls.hide();
+          this.$wrapper.prepend(controls);
+        }
+
+        this.blockCounts[block.type] = this.blockCounts[block.type] - 1;
+        this.blocks = _.reject(this.blocks, function(item){ return (item.blockID == block.ID); });
+        this.stopListening(block);
+
+        block.remove();
 
         SirTrevor.EventBus.trigger("block:remove");
         this.triggerBlockCountUpdate();

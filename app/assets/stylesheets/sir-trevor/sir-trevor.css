@@ -94,6 +94,22 @@
   border: 0.1em solid #d4d4d4;
   padding: .6em; }
 
+.st-errors {
+  background-color: #ffe1e4;
+  padding: 2em;
+  color: #d70014; }
+
+.st-errors p,
+.st-errors ul {
+  margin: 0; }
+
+.st-errors ul {
+  padding-left: 1em; }
+
+.st-errors p {
+  margin-bottom: 0.5em;
+  font-weight: 700; }
+
 .st-block-controls__top:before {
   width: 100%;
   display: block;
@@ -104,11 +120,11 @@
 
 .st-block-controls__top:hover:before {
   color: #34e0c2;
-  background: #f9f9f9; }
+  background: #f3f3f3; }
 
 .st-block-controls {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  background-color: #f9f9f9;
+  background-color: #f3f3f3;
   display: none;
   border-radius: 3px;
   color: #42474b;
@@ -145,7 +161,8 @@
 .st-block__inner:hover {
   border-color: #34e0c2; }
 
-.st-block--with-errors .st-block__inner {
+.st-block--with-errors .st-block__inner,
+.st-block--delete-active .st-block__inner {
   border-color: #d70014; }
 
 .st-block--with-plus:after,
@@ -162,16 +179,16 @@
   line-height: 0.9; }
 
 .st-icon--add:hover:after {
-  background: #f9f9f9;
+  background: #f3f3f3;
   color: #34e0c2; }
 
 .with-st-controls:after,
 .with-st-controls:before {
   display: none; }
 
-.st-block.st-drag-over:after,
-.st-block.st-drag-over:last-child:after,
-.st-block-controls__top.st-drag-over:before {
+.st-outer--is-reordering .st-block.st-drag-over:after,
+.st-outer--is-reordering .st-block.st-drag-over:last-child:after,
+.st-outer--is-reordering .st-block-controls__top.st-drag-over:before {
   font-family: inherit;
   content: "Drop block here";
   text-align: center;
@@ -194,48 +211,11 @@ h1.st-text-block {
 ul.st-text-block {
   margin-left: 1.875em; }
 
-.st-block__ui {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  opacity: 0; }
-
-.st-block__inner:hover .st-block__ui {
-  opacity: 1; }
-
-.st-block__reorder,
-.st-block__remove {
-  display: block;
-  float: left;
-  width: 63px;
-  height: 48px;
-  line-height: 48px;
-  font-size: 20px;
-  color: #34e0c2;
-  background: #fff;
-  text-align: center;
-  border: 0.125em solid #34e0c2;
-  border-right: 0;
-  border-bottom: 0;
-  cursor: pointer; }
-
-.st-block--with-errors .st-block__reorder,
-.st-block--with-errors .st-block__remove {
-  color: #d70014;
-  border-color: #d70014; }
-
-.st-block__reorder:hover,
-.st-block__remove:hover {
-  color: #fff;
-  background: #34e0c2; }
-
-.st-block--with-errors .st-block__reorder:hover,
-.st-block--with-errors .st-block__remove:hover {
-  background-color: #d70014; }
-
 .st-block__dropzone {
   padding: 1.6em 0 1em;
-  background: #f9f9f9; }
+  border-radius: 0.3em;
+  background: #f3f3f3;
+  border-top: 0.125em solid transparent; }
 
 .st-block__dropzone .st-icon {
   font-size: 4em;
@@ -254,9 +234,8 @@ ul.st-text-block {
   text-transform: lowercase;
   font-weight: 700; }
 
-.st-dropzone--dragover p,
-.st-dropzone--dragover .st-icon {
-  color: #34e0c2; }
+.st-drag-over .st-block__dropzone {
+  border-top-color: #cdcdcd; }
 
 .st-block .st-block__paste-input[type="text"] {
   text-align: center;
@@ -335,9 +314,9 @@ ul.st-text-block {
   width: 0.4em;
   height: 0.4em;
   position: absolute;
-  z-index: 1;
   right: -0.3em;
   bottom: 0.6em;
+  z-index: 1;
   border: 0.125em solid #34e0c2;
   background: #fff;
   -webkit-transform: rotate(45deg);
@@ -361,6 +340,58 @@ ul.st-text-block {
   position: relative;
   z-index: 2;
   padding: 0.3em 0.5em; }
+
+.st-block__ui,
+.st-block__ui-delete-controls {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  opacity: 0; }
+
+.st-block__inner:hover .st-block__ui {
+  opacity: 1; }
+
+.st-block-ui-btn {
+  display: block;
+  float: left;
+  width: 3em;
+  height: 2.5em;
+  line-height: 2.5em;
+  font-size: 1.4em;
+  color: #34e0c2;
+  background: #fff;
+  text-align: center;
+  border: 0.125em solid #34e0c2;
+  border-right: 0;
+  border-bottom: 0;
+  cursor: pointer; }
+
+.st-block--with-errors .st-block-ui-btn,
+.st-block--delete-active .st-block-ui-btn {
+  color: #d70014;
+  border-color: #d70014; }
+
+.st-block-ui-btn:hover {
+  color: #fff;
+  background: #34e0c2; }
+
+.st-block--with-errors .st-block-ui-btn:hover,
+.st-block--delete-active .st-block-ui-btn:hover {
+  background-color: #d70014; }
+
+.st-block--delete-active .st-block__ui-delete-controls {
+  opacity: 1;
+  z-index: 2; }
+
+.st-block__delete-label {
+  display: block;
+  border: 0.125em solid #d70014;
+  border-bottom: none;
+  border-right: none;
+  text-align: center;
+  background: #fff;
+  color: #d70014;
+  padding: 0.4em 0; }
 
 .st-format-bar {
   position: absolute;
