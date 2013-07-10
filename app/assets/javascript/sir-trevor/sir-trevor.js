@@ -1,3 +1,14 @@
+/*!
+ * Sir Trevor JS v0.3.0
+ *
+ * Created by Made by Many (http://madebymany.com)
+ *
+ * Released under the MIT license
+ * www.opensource.org/licenses/MIT
+ *
+ * Date: 2013-07-09
+ */
+
 (function ($, _){
 
   var root = this,
@@ -562,17 +573,17 @@
     initializeDroppable: function() {
       SirTrevor.log("Adding drag and drop capabilities for block " + this.blockID);
 
-      var drop_options = _.extend(SirTrevor.DEFAULTS.default_drop_options, this.drop_options);
+      this.drop_options = _.extend({}, SirTrevor.DEFAULTS.default_drop_options, this.drop_options);
 
       // Build the dropzone interface
-      var drop_html = $(_.template(drop_options.drop_html, this));
+      var drop_html = $(_.template(this.drop_options.drop_html, this));
 
       if (this.drop_options.pastable) {
-        drop_html.append(drop_options.paste_html);
+        drop_html.append(this.drop_options.paste_html);
       }
 
       if (this.drop_options.uploadable) {
-        drop_html.append(drop_options.upload_html);
+        drop_html.append(this.drop_options.upload_html);
       }
 
       this.$editor.hide();
@@ -823,6 +834,7 @@
       "toData",
       "onDrop",
       "onContentPasted",
+      "onTextContentPasted",
       "onBlockRender",
       "beforeBlockRender",
       "toMarkdown",
@@ -1031,14 +1043,14 @@
             dataObj = {};
 
         /* Simple to start. Add conditions later */
-        if (this.$$('.st-text-block').length > 0) {
-          var content = this.$$('.st-text-block').html();
+        if (this.hasTextBlock()) {
+          var content = this.getTextBlock().html();
           if (content.length > 0) {
             dataObj.text = SirTrevor.toMarkdown(content, this.type);
           }
         }
 
-        var hasTextAndData = (!_.isUndefined(dataObj.text) || this.$$('.st-text-block').length === 0);
+        var hasTextAndData = (!_.isUndefined(dataObj.text) || !this.hasTextBlock());
 
         // Add any inputs to the data attr
         if(this.$$('input[type="text"]').not('.st-paste-block').length > 0) {
@@ -1065,19 +1077,19 @@
 
       /* Generic implementation to tell us when the block is active */
       focus: function() {
-        this.$('.st-text-block').focus();
+        this.getTextBlock().focus();
       },
 
       blur: function() {
-        this.$('.st-text-block').blur();
+        this.getTextBlock().blur();
       },
 
       onFocus: function() {
-        this.$('.st-text-block').bind('focus', this._onFocus);
+        this.getTextBlock().bind('focus', this._onFocus);
       },
 
       onBlur: function() {
-        this.$('.st-text-block').bind('blur', this._onBlur);
+        this.getTextBlock().bind('blur', this._onBlur);
       },
 
       /*
@@ -1115,12 +1127,36 @@
                    .on('click', '.st-block-ui-btn--deny-delete', _.bind(onDeleteDeny, this));
       },
 
-      onContentPasted: function(ev){
-        var textBlock = this.$$('.st-text-block');
-        if (textBlock.length > 0) {
-          textBlock.html(SirTrevor.toHTML(SirTrevor.toMarkdown(textBlock.html(), this.type), this.type));
+      onTextContentPasted: function(target, before, event){
+        var after = target[0].innerHTML;
+
+        var pos1 = -1,
+            pos2 = -1,
+            after_len = after.length,
+            before_len = before.length;
+
+        for (var i = 0; i < after_len; i++) {
+          if (pos1 == -1 && before.substr(i, 1) != after.substr(i, 1)) {
+            pos1 = i - 1;
+          }
+
+          if (pos2 == -1 &&
+              before.substr(before_len - i - 1, 1) !=
+              after.substr(after_len - i - 1, 1)
+            ) {
+            pos2 = i;
+          }
         }
+
+        var pasted = after.substr(pos1, after_len - pos2 - pos1 + 1);
+
+        var replace = SirTrevor.toHTML(SirTrevor.toMarkdown(pasted, this.type), this.type);
+
+        // replace the HTML mess with the plain content
+        target[0].innerHTML = after.substr(0, pos1) + replace + after.substr(pos1 + pasted.length);
       },
+
+      onContentPasted: function(event, target){},
 
       /*
         Generic Upload Attachment Function
@@ -1157,12 +1193,14 @@
       },
 
       _handleContentPaste: function(ev) {
-        // We need a little timeout here
-        var timed = function(ev){
-          // Delegate this off to the super method that can be overwritten
-          this.onContentPasted(ev);
-        };
-        _.delay(_.bind(timed, this, ev), 100);
+        var target = $(ev.currentTarget),
+            original_content = target.html();
+
+        if (target.hasClass('st-text-block')) {
+          _.delay(_.bind(this.onTextContentPasted, this, target, original_content, ev), 0);
+        } else {
+          _.delay(_.bind(this.onContentPasted, this, ev, target), 0);
+        }
       },
 
       _getBlockClass: function() {
@@ -1209,7 +1247,7 @@
       _initTextBlocks: function() {
         var shift_down = false;
 
-        this.$$('.st-text-block')
+        this.getTextBlock()
           .bind('paste', this._handleContentPaste)
           .bind('keydown', function(e){
             var code = (e.keyCode ? e.keyCode : e.which);
@@ -1242,7 +1280,15 @@
       },
 
       hasTextBlock: function() {
-        return this.$('.st-text-block').length > 0;
+        return this.getTextBlock().length > 0;
+      },
+
+      getTextBlock: function() {
+        if (_.isUndefined(this.text_block)) {
+          this.text_block = this.$('.st-text-block');
+        }
+
+        return this.text_block;
       },
 
       _initPaste: function() {
@@ -1290,20 +1336,20 @@
       },
 
       _bindToBlock: function(block) {
-
         var formatter = this,
             ctrlDown = false;
 
         block
           .on('keyup','.st-text-block', function(ev) {
-            if(ev.which == 17 || ev.which == 224) {
+            if(ev.which == 17 || ev.which == 224 || ev.which == 91) {
               ctrlDown = false;
             }
           })
           .on('keydown','.st-text-block', { formatter: formatter }, function(ev) {
-            if(ev.which == 17 || ev.which == 224) {
+            if(ev.which == 17 || ev.which == 224 || ev.which == 91) {
               ctrlDown = true;
             }
+
             if(ev.which == ev.data.formatter.keyCode && ctrlDown === true) {
               document.execCommand(ev.data.formatter.cmd, false, true);
               ev.preventDefault();
@@ -1323,25 +1369,33 @@
     Block Quote
   */
 
-  SirTrevor.Blocks.Quote = SirTrevor.Block.extend({
+  SirTrevor.Blocks.Quote = (function(){
 
-    type: 'Quote',
+    var template = _.template([
+      '<blockquote class="st-required st-text-block" contenteditable="true"></blockquote>',
+      '<input maxlength="140" name="cite" placeholder="Credit" class="st-input-string st-required" type="text" />'
+    ].join("\n"));
 
-    editorHTML: function() {
-      return _.template('<blockquote class="st-required st-text-block <%= className %>" contenteditable="true"></blockquote>\
-          <input maxlength="140" name="cite" placeholder="Credit" class="st-input-string st-required" type="text" />', this);
-    },
+    return SirTrevor.Block.extend({
 
-    loadData: function(data){
-      this.$$('.st-text-block').html(SirTrevor.toHTML(data.text, this.type));
-      this.$$('input').val(data.cite);
-    },
+      type: 'Quote',
 
-    toMarkdown: function(markdown) {
-      return markdown.replace(/^(.+)$/mg,"> $1");
-    }
+      editorHTML: function() {
+        return template(this);
+      },
 
-  });
+      loadData: function(data){
+        this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
+        this.$$('input').val(data.cite);
+      },
+
+      toMarkdown: function(markdown) {
+        return markdown.replace(/^(.+)$/mg,"> $1");
+      }
+
+    });
+
+  })();
   /*
     Text Block
   */
@@ -1349,10 +1403,10 @@
 
     type: 'Heading',
 
-    editorHTML: '<h1 class="st-required st-text-block" contenteditable="true"></h1>',
+    editorHTML: '<div class="st-required st-text-block st-text-block--heading" contenteditable="true"></div>',
 
     loadData: function(data){
-      this.$$('.st-text-block').html(SirTrevor.toHTML(data.text, this.type));
+      this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
     }
   });
   /*
@@ -1419,7 +1473,7 @@
     editorHTML: '<div class="st-required st-text-block" contenteditable="true"></div>',
 
     loadData: function(data){
-      this.$$('.st-text-block').html(SirTrevor.toHTML(data.text, this.type));
+      this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
     }
   });
   SirTrevor.Blocks.Tweet = (function(){
@@ -1547,7 +1601,7 @@
       },
 
       loadData: function(data){
-        this.$$('.st-text-block').html(SirTrevor.toHTML(data.text, this.type));
+        this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
       },
 
       toMarkdown: function(markdown) {
@@ -1656,6 +1710,7 @@
     var Underline = SirTrevor.Formatter.extend({
       title: "underline",
       cmd: "underline",
+      keyCode: 85,
       text : "U"
     });
 
