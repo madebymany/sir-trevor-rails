@@ -1550,7 +1550,9 @@
                   id: data.id_str,
                   text: data.text,
                   created_at: data.created_at,
-                  status_url: url
+                  status_url: url,
+                  urls: data.entities.urls,
+                  media: data.entities.media
                 };
 
                 // Save this data on the block
