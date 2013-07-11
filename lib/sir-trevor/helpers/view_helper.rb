@@ -7,9 +7,9 @@ module SirTrevor
 
       def render_sir_trevor(json, image_type = 'large')
         if hash = parse_sir_trevor(json)
-          hash.map { |object|
+          safe_join hash.map { |object|
             render_sir_trevor_block(object, image_type)
-          }.compact.join.html_safe
+          }.compact
         else
           ''
         end
