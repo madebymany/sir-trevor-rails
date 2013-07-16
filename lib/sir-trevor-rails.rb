@@ -14,6 +14,10 @@ module SirTrevor
   	yield self
   end
 
+  def self.parse_json(json)
+    MultiJson.load(json, symbolize_keys: true)
+  end
+
 end
 
 require "sir-trevor/engine"

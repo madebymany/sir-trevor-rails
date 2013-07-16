@@ -1,4 +1,4 @@
 <div class="content-block quote-block">
-	<%= sir_trevor_markdown block["text"] %>
-  <%= content_tag(:cite, sanitize("&ndash; #{block["cite"]}", tags: %w{a}), class: "quote") unless block["cite"].nil? %>
+	<%= sir_trevor_markdown block[:text] %>
+  <%= content_tag(:cite, sanitize("&ndash; #{block[:cite]}", tags: %w{a}), class: "quote") unless block[:cite].nil? %>
 </div>
