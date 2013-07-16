@@ -879,7 +879,7 @@
 
     _.extend(Block.prototype, FunctionBind, SirTrevor.Events, Renderable, {
 
-      bound: ["_handleDrop", "_handleContentPaste", "_onFocus", "_onBlur", "onDrop", "onDeleteClick"],
+      bound: ["_handleDrop", "_handleContentPaste", "_onFocus", "_onBlur", "onDrop", "onDeleteClick", "checkForSpan"],
 
       className: 'st-block st-icon--add',
 
@@ -1284,17 +1284,13 @@
             }
 
           }, this))
-          .bind('mouseup', this.getSelectionForFormatter);
+          .bind('mouseup', this.getSelectionForFormatter)
+          .on('DOMNodeInserted', this.checkForSpan);
       },
 
-      getSelectionForFormatter: function() {
-        var range = window.getSelection().getRangeAt(0),
-            rects = range.getClientRects();
-
-        if (!range.collapsed && rects.length) {
-          SirTrevor.EventBus.trigger('formatter:positon', rects);
-        } else {
-          SirTrevor.EventBus.trigger('formatter:hide');
+      checkForSpan: function(e) {
+        if (e.target.tagName == "SPAN") {
+          $(e.target).attr('style', ''); // Hacky fix for Chrome.
         }
       },
 
@@ -1602,7 +1598,7 @@
 
   SirTrevor.Blocks.List = (function() {
 
-    var template = '<ul class="st-text-block" contenteditable="true"><li></li></ul>';
+    var template = '<div class="st-text-block" contenteditable="true"><ul><li></li></ul></div>';
 
     return SirTrevor.Block.extend({
 
@@ -1613,7 +1609,15 @@
       },
 
       loadData: function(data){
-        this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
+        this.getTextBlock().html("<ul>" + SirTrevor.toHTML(data.text, this.type) + "</ul>");
+      },
+
+      onBlockRender: function() {
+        this.getTextBlock().bind('click', function(){
+          if($(this).text().length < 1) {
+            document.execCommand("insertUnorderedList",false,false);
+          }
+        });
       },
 
       toMarkdown: function(markdown) {
@@ -1623,7 +1627,12 @@
       },
 
       toHTML: function(html) {
-        return html.replace(/^ - (.+)$/mg,"<li>$1</li>").replace(/\n/mg,"");
+        html = html.replace(/^ - (.+)$/mg,"<li>$1</li>")
+                   .replace(/\n/mg,"");
+
+        html = "<ul>" + html + "</ul>";
+
+        return html;
       }
 
     });
