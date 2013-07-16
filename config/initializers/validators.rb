@@ -2,7 +2,7 @@ require 'active_model/validator'
 
 class IsJsonValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
-    @json = JSON.parse(value)
+    @json = SirTrevor.parse_json(value)
     record.errors.add(attribute, "is empty") if @json.empty?
   rescue TypeError => e
     record.errors.add(attribute, "is not valid JSON: #{e.message}")

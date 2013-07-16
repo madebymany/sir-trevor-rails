@@ -11,7 +11,7 @@ module SirTrevor
 
         options = { :language => I18n.locale.to_s }.merge(options)
         input_html = (options.delete(:input_html) || {})
-        input_html['class'] = "sir-trevor-area visuallyhidden"
+        input_html[:class] = "sir-trevor-area visuallyhidden"
         hash = input_html.stringify_keys
 
         instance_tag = ActionView::Base::InstanceTag.new(object_name, method, self, options.delete(:object))
