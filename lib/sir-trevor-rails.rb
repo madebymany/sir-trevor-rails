@@ -4,6 +4,8 @@ module SirTrevor
 
   mattr_accessor :app_root
 
+  autoload :Model, 'sir-trevor/model'
+
   module Helpers
     autoload :ViewHelper, 'sir-trevor/helpers/view_helper'
     autoload :FormHelper, 'sir-trevor/helpers/form_helper'
@@ -21,3 +23,4 @@ module SirTrevor
 end
 
 require "sir-trevor/engine"
+require "sir-trevor/block"

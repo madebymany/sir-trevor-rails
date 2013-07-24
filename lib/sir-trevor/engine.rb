@@ -1,21 +1,23 @@
 module SirTrevor
 
-  class Engine < Rails::Engine
+  if defined?(Rails)
+    class Engine < Rails::Engine
 
-    require 'redcarpet'
-    require 'twitter-text'
+      require 'redcarpet'
+      require 'twitter-text'
 
-    initializer "sir_trevor.load_app_instance_data" do |app|
-      SirTrevor.setup do |config|
-        config.app_root = app.root
+      initializer "sir_trevor.load_app_instance_data" do |app|
+        SirTrevor.setup do |config|
+          config.app_root = app.root
+        end
       end
-    end
 
-    initializer "sir_trevor.helpers" do
-      ActiveSupport.on_load :action_view do
-        ActionView::Base.send :include, SirTrevor::Helpers::ViewHelper
-        ActionView::Base.send :include, SirTrevor::Helpers::FormHelper
-        ActionView::Helpers::FormBuilder.send :include, SirTrevor::Helpers::FormBuilder
+      initializer "sir_trevor.helpers" do
+        ActiveSupport.on_load :action_view do
+          ActionView::Base.send :include, SirTrevor::Helpers::ViewHelper
+          ActionView::Base.send :include, SirTrevor::Helpers::FormHelper
+          ActionView::Helpers::FormBuilder.send :include, SirTrevor::Helpers::FormBuilder
+        end
       end
     end
   end
