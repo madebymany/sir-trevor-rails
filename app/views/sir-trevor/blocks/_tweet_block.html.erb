@@ -1,6 +1,6 @@
 <div class="content-block tweet-block">
   <%= link_to image_tag("//twitter.com/api/users/profile_image/#{ block[:user][:screen_name] }?size=bigger", :class => 'img'), "http://twitter.com/#{ block[:user][:screen_name] }" %>
-  <p><%= sanitize auto_link(block[:text]), tags: %w{a}, attributes: %w{href rel target} %></p>
+  <p><%= sanitize Twitter::Autolink.auto_link(block[:text]), tags: %w{a}, attributes: %w{href rel target} %></p>
   <cite>From <%= link_to "@#{ block[:user][:screen_name] }", "http://twitter.com/#{ block[:user][:screen_name] }" %> on Twitter:</cite>
   <time datetime="<%= block[:created_at] %>">(<%= link_to Time.parse(block[:created_at]), "http://twitter.com/#{block[:user][:screen_name]}/status/#{block[:id_str]}" %>)</time>
 </div>
