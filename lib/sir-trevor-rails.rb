@@ -2,7 +2,7 @@ require "active_support/dependencies"
 
 module SirTrevor
 
-	mattr_accessor :app_root
+  mattr_accessor :app_root
 
   module Helpers
     autoload :ViewHelper, 'sir-trevor/helpers/view_helper'
@@ -11,7 +11,7 @@ module SirTrevor
   end
 
   def self.setup
-  	yield self
+    yield self
   end
 
   def self.parse_json(json)
