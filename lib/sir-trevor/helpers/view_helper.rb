@@ -16,7 +16,7 @@ module SirTrevor
       end
 
       def render_sir_trevor_block(object, image_type = 'large')
-        view_name = "sir-trevor/blocks/#{object['type'].to_s.downcase}_block"
+        view_name = "sir-trevor/blocks/#{object['type'].to_s.downcase}_block.html.erb"
 
         render(view_name,
                :block => object['data'],
@@ -27,7 +27,7 @@ module SirTrevor
         image = pluck_sir_trevor_type(json, "image")
     
         unless image.nil? 
-          render(:partial => "sir-trevor/blocks/image_block", :locals => {:block => image['data'], :image_type => image_type, :protocol => request.protocol}) if image.has_key?("data")
+          render(:partial => "sir-trevor/blocks/image_block.html.erb", :locals => {:block => image['data'], :image_type => image_type, :protocol => request.protocol}) if image.has_key?("data")
         end
       end
       
