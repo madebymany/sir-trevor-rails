@@ -27,7 +27,9 @@ module SirTrevor
         image = pluck_sir_trevor_type(json, :image)
 
         unless image.nil?
-          render(:partial => "sir-trevor/blocks/image_block", :locals => {:block => image[:data], :image_type => image_type, :protocol => request.protocol}) if image.has_key?(:data)
+          render(:partial => "sir-trevor/blocks/image_block",
+                 :locals => { :block => image[:data], :image_type => image_type,
+                              :protocol => request.protocol }) if image.has_key?(:data)
         end
       end
 
@@ -54,7 +56,9 @@ module SirTrevor
       end
 
       def sir_trevor_markdown(text)
-        renderer = CustomMarkdownFormatter.new(:hard_wrap => true, :filter_html => true, :autolink => true, :no_intraemphasis => true, :fenced_code => true)
+        renderer = CustomMarkdownFormatter.new(:hard_wrap => true, :filter_html => true,
+                                               :autolink => true, :no_intraemphasis => true,
+                                               :fenced_code => true)
         markdown = Redcarpet::Markdown.new(renderer)
         markdown.render(text).html_safe
       end
