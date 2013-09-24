@@ -75,7 +75,7 @@ module SirTrevor
           hash = SirTrevor.parse_json(json)
           if hash.has_key?(:data)
             item = hash[:data].select { |item| item[:type] == type }
-            item.first
+            item.first[:text]
           end
         end
     end
