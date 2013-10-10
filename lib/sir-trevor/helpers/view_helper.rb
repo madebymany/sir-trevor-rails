@@ -3,8 +3,7 @@ module SirTrevor
     module ViewHelper
 
       extend ActiveSupport::Concern
-      include Twitter::Autolink
-
+      
       def render_sir_trevor(json, image_type = :large)
         if hash = parse_sir_trevor(json)
           safe_join hash.map { |object|
