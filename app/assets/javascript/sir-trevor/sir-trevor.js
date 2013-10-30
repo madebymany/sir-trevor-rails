@@ -3134,11 +3134,8 @@
   };
 
   SirTrevor.bindFormSubmit = function(form) {
-    if (!formBound) {
       SirTrevor.submittable();
       form.bind('submit', this.onFormSubmit);
-      formBound = true;
-    }
   };
 
   SirTrevor.onBeforeSubmit = function(should_validate) {
