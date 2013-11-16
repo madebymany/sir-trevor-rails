@@ -3024,11 +3024,12 @@
   };
 
   SirTrevor.bindFormSubmit = function(form) {
-    if (!formBound) {
+    //https://github.com/madebymany/sir-trevor-rails/commit/2e4125faa5f9798368b61feb1c0f549204251cab
+    // if (!formBound) {
       SirTrevor.submittable();
       form.bind('submit', this.onFormSubmit);
-      formBound = true;
-    }
+      // formBound = true;
+    // }
   };
 
   SirTrevor.onBeforeSubmit = function(should_validate) {
