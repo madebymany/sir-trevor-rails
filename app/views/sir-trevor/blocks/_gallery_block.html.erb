@@ -1,6 +1,0 @@
-<% # Remember, a gallery is just an array of images ;-) %>
-<div class="content-block gallery-block">
-  <% block.each do |image| %>
-    <%= render(:partial => "sir-trevor/blocks/image_block", :locals => {:block => image['data'], :image_type => image_type}, :formats => formats) if image.has_key?("data") && image['type'] == "image" %>
-  <% end %>
-</div>

@@ -1,3 +1,5 @@
-<figure class="content-block image-block">
-  <%= sir_trevor_image_tag(block, image_type) %>
-</figure>
+<% if image_block.file -%>
+  <figure class="item__content-block item__content-block--image">
+    <%= image_tag image_block.file %>
+  </figure>
+<% end -%>
