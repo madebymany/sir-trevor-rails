@@ -5,8 +5,6 @@ module SirTrevorRails
 
     def self.from_hash(hash, parent)
       hash = hash.deep_dup
-      Rails.logger.debug self.type_klass(hash)
-      Rails.logger.info "BOBOBOBOBOBOBOBOBOB"
       self.type_klass(hash).new(hash, parent)
     end
 
