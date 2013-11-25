@@ -2,7 +2,9 @@ require 'twitter-text'
 
 module SirTrevorRails
   module Blocks
-    class TweetBlock
+    class TweetBlock < SirTrevorRails::Block
+
+      include ActionView::Helpers::SanitizeHelper
 
       def render_tweet_body
         sanitize Twitter::Autolink.auto_link(
@@ -11,16 +13,12 @@ module SirTrevorRails
             ), tags: %w{a span}, attributes: %w{class href rel target}
       end
 
-      def status_url
-        "//twitter.com/" << screen_name << "/status/" << self.id_str
-      end
-
       def profile_url
         "//twitter.com/" << self.user[:screen_name]
       end
 
       def screen_name
-        self.tweet_block.user[:screen_name]
+        self.user[:screen_name]
       end
 
       def at_name
