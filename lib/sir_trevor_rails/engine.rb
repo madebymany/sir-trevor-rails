@@ -15,5 +15,14 @@ module SirTrevorRails
       end
     end
 
+    initializer "sir_trevor_rails.view_resolver" do
+      ActiveSupport.on_load(:action_controller) do
+        ActionController::Base.send :append_view_path, SirTrevorRails::ViewResolver.new
+      end
+    end
+
+    initializer "sir_trevor_rails.has_sir_trevor_content" do
+      ActiveRecord::Base.send :include, SirTrevorRails::HasSirTrevorContent
+    end
   end
 end

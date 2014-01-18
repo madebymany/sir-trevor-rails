@@ -24,8 +24,7 @@ module SirTrevorRails
             instance_variable_set("@#{attribute}", SirTrevorRails::BlockArray.from_json(content, self))
         end
       end
+
     end
   end
 end
-
-ActiveRecord::Base.send :include, SirTrevorRails::HasSirTrevorContent
