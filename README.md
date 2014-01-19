@@ -1,117 +1,90 @@
 # Sir Trevor Rails
 
-A Rails gem for integrating the Sir Trevor JS into your Rails 3.x application. 
+A Rails gem for integrating Sir Trevor JS into your Rails 3.x application.
 
 # Usage
 
-Add Sir Trevor to your Gemfile 
+Add Sir Trevor to your Gemfile
 
 ```ruby
-gem 'sir-trevor-rails'
+gem 'sir_trevor_rails'
 ```
 
 ```bash
-bundle install 
+bundle install
 ```
 
-Require SirTrevor in your `application_controller.rb`
+Include Sir Trevor JS in your project following the instructions set out [here](http://madebymany.github.io/sir-trevor-js/docs.html)
 
-```ruby
-require 'sir-trevor-rails'
-```
+## Generators: Views
 
-Include Sir Trevor in your `application.css` file
-
-```css
-*= require sir-trevor
-```
-
-Include Sir Trevor in your `application.js` file
-
-```js
-//= require sir-trevor
-```
-
-In your view file for your editable content (must be a 'text' field as we store the JSON here) here we have a field called 'content'
-
-```ruby
-f.sir_trevor_text_area :content
-```
-
-And instantiate a new `SirTrevor.Editor` instance in your Javascript. 
-
-```javascript
-$(function(){
-  var editor = new SirTrevor.Editor({ el: $('.sir-trevor-area') });
-});
-```
-
-Or for multiple instances:
-
-```javascript
-$(function(){
-  var instances = $('.sir-trevor-area'),
-      l = instances.length, instance;
-  
-  while (l--) {
-    instance = $(instances[l]);
-    new SirTrevor.Editor({ el: instance });
-  }
-  
-});
-```
-
-To render your content (in your view file)
-
-```ruby
-<%= render_sir_trevor(post.content) %>
-```
-
-There's an example Rails 3.2.7 project with all of this already done in the [Sir Trevor JS repository](https://github.com/madebymany/sir-trevor-js/tree/master/examples/rails/sir-trevor-example).
-
-# Generators
-
-## Views
-
-To grab all of the default block type partials into your application run the following generator command:
+Grab all of the default block type partials by running the following generator command:
 
 ```bash
 rails g sir_trevor:views
 ```
 
-This will copy all of the SirTrevor block partials into `app/views/sir-trevor/blocks/`
+This will copy all of the SirTrevor block partials into `app/views/sir_trevor/blocks/`
 
-# Handling image uploads
+## Rendering
 
-We don't provide a default image uploader out of the box, because everyone will have different requirements. To see an example of an image uploader, please refer to our Rails examples in the [Sir Trevor JS repository](https://github.com/madebymany/sir-trevor-js/tree/master/examples/rails/image-uploader). 
+In your models pass the attribute name of your Sir Trevor content to `sir_trevor_content`
 
-# Helper methods
+```ruby
+sir_trevor_content :content
+```
 
-**`render_sir_trevor`**
+In your view files, call render to display the Sir Trevor content
 
-Parses the blocks JSON content, loops through each piece of block content and render the appropriate partial for the block. 
+```ruby
+<%= render @item.contemt %>
+```
 
-**`render_sir_trevor_image`**
+There's an example Rails 3.2.7 project with all of this already done in the [Sir Trevor JS repository](https://github.com/madebymany/sir-trevor-js/tree/master/examples/rails/sir-trevor-example).
 
-Returns the first available SirTrevor image from the supplied JSON.
+## Handling image uploads
 
-**`sir_trevor_image_tag`**
+We don't provide a default image uploader out of the box, because everyone will have different requirements. To see an example of an image uploader, please refer to our Rails examples in the [Sir Trevor JS repository](https://github.com/madebymany/sir-trevor-js/tree/master/examples/rails/image-uploader).
 
-Returns an image tag from a SirTrevor Image block
+## Handling markdown
 
-**`pluck_sir_trevor_type` (Private)**
+**`sir_trevor_markdown`**
 
-Get the first instance of a specified SirTrevor block type from the supplied JSON
+Use the `sir_trevor_markdown`method in your custom block partials to correctly parse the markdown in a block
 
-# Requirements
+## Querying the block content
 
-- Rails 3.x  
-- jQuery
-- Underscore.js (bundled)
+Use the following methods to query the Sir Trevor content
+
+**`@item.contemt.has_block_of_type?(:image)`**
+
+Does this content have an image block?
+
+**`@item.contemt.first_block_of_type(:video)`**
+
+Return the first video block in the content
+
+## Generators: Blocks
+
+Run the blocks generator to create templates for your custom blocks
+
+```bash
+rails g sir_trevor:blocks my_custom_block
+```
+
+This will generate an html file for rendering the block, a javascript file for the editor and a ruby block class.
+
+## Block Classes
+
+Ruby block classes can be used like decorators for the block content. See the [tweet block class](https://github.com/madebymany/sir-trevor-rails/blob/redesign-gem/lib/sir_trevor_rails/blocks/tweet_block.rb) for an example
+
+## Requirements
+
+- Rails 3.x
 
 # To do
 
-- Add tests 
+- Add tests
 
 # Licence
 

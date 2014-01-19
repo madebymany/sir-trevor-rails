@@ -9,7 +9,7 @@ module SirTrevorRails
       end
 
       def views
-        directory "app/views/sir-trevor"
+        directory "app/views/sir_trevor"
       end
 
     end

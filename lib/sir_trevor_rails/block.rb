@@ -19,16 +19,38 @@ module SirTrevorRails
     attr_reader :parent, :type, :as_json
 
     def to_partial_path
-      "sir-trevor/blocks/" << self.class.name.demodulize.underscore
+      "sir_trevor/blocks/" << self.class.name.demodulize.underscore
     end
 
     private
 
+    # Infers the block class.
+    # Safe lookup that tries to identify user created block class.
+    #
+    # @param [Symbol] type
+
     def self.block_class(type)
-      klass_name = "#{type.to_s.camelize}Block"
-      return SirTrevorRails::Blocks.const_get(klass_name)
+      block_name = "#{type.to_s.camelize}Block"
+      begin
+        block_name.constantize
       rescue NameError
-        return SirTrevorRails::Blocks.const_set(klass_name, Class.new(Block))
+        block_class!(block_name)
+      end
+    end
+
+    # Infers the block class.
+    # Failover from block_class.
+    # Safe lookup against the SirTevor::Blocks namespace
+    # If no block is found, create one with given name and inherit from Block class
+    #
+    # @param [Constant] block_name
+
+    def self.block_class!(block_name)
+      begin
+        SirTrevorRails::Blocks.const_get(block_name)
+      rescue NameError
+        SirTrevorRails::Blocks.const_set(block_name, Class.new(Block))
+      end
     end
 
     def self.type_klass(hash)
