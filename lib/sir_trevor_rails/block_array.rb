@@ -19,7 +19,7 @@ module SirTrevorRails
     private
 
     def block_constant(type)
-      "#{type.to_s.camelize}Block".contstantize
+      "#{type.to_s.camelize}Block".constantize
     end
 
   end
