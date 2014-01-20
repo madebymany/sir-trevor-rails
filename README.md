@@ -37,7 +37,7 @@ sir_trevor_content :content
 In your view files, call render to display the Sir Trevor content
 
 ```ruby
-<%= render @item.contemt %>
+<%= render @item.content %>
 ```
 
 There's an example Rails 3.2.7 project with all of this already done in the [Sir Trevor JS repository](https://github.com/madebymany/sir-trevor-js/tree/master/examples/rails/sir-trevor-example).
@@ -56,11 +56,11 @@ Use the `sir_trevor_markdown`method in your custom block partials to correctly p
 
 Use the following methods to query the Sir Trevor content
 
-**`@item.contemt.has_block_of_type?(:image)`**
+**`@item.content.has_block_of_type?(:image)`**
 
 Does this content have an image block?
 
-**`@item.contemt.first_block_of_type(:video)`**
+**`@item.content.first_block_of_type(:video)`**
 
 Return the first video block in the content
 
