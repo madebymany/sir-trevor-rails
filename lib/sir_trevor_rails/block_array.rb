@@ -13,13 +13,13 @@ module SirTrevorRails
     end
 
     def first_block_of_type(type)
-      detect? { |b| b.is_a?(block_constant(type)) }
+      detect { |b| b.is_a?(block_constant(type)) }
     end
 
     private
 
     def block_constant(type)
-      "SirTrevorRails::#{type.to_s.camelize}Block".constantize
+      "SirTrevorRails::Blocks::#{type.to_s.camelize}Block".constantize
     end
 
   end
