@@ -9,7 +9,7 @@ module SirTrevorRails
 
       def sir_trevor_content(*attributes)
         attributes.each do |attribute|
-          next unless name.constantize.column_names.include? attribute.to_s
+          #next unless name.constantize.column_names.include? attribute.to_s
           define_attribute_reader(attribute)
         end
       end
