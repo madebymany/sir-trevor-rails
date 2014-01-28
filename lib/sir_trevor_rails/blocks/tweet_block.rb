@@ -9,7 +9,7 @@ module SirTrevorRails
       def render_tweet_body
         sanitize Twitter::Autolink.auto_link(
               self.text,
-              url_entities: (tweet_block.entities.values_at(:urls, :media).flatten.compact.uniq rescue nil)
+              url_entities: (self.entities.values_at(:urls, :media).flatten.compact.uniq rescue nil)
             ), tags: %w{a span}, attributes: %w{class href rel target}
       end
 
