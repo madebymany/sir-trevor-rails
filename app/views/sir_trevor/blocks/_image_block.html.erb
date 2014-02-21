@@ -1,4 +1,4 @@
-<% if image_block.file -%>
+<% if image_block.file && image_block.file[:url] -%>
   <figure class="item__content-block item__content-block--image">
     <%= image_tag image_block.file[:url] %>
   </figure>
