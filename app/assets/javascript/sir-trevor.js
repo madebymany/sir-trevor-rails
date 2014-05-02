@@ -1,2 +1,3 @@
-//= require_directory ./sir-trevor/libs
+//= require ./sir-trevor/libs/underscore
+//= require ./sir-trevor/libs/eventable
 //= require ./sir-trevor/sir-trevor
