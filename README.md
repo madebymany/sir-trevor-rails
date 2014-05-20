@@ -62,11 +62,15 @@ Use the ``sir_trevor_markdown`` method in your custom block partials to correctl
 
 Use the following methods to query the Sir Trevor content
 
-``@item.content.has_block_of_type?(:image)``
+```ruby
+@item.content.has_block_of_type?(:image)
+```
 
 Does this content have an image block?
 
-``@item.content.first_block_of_type(:video)``
+```ruby
+@item.content.first_block_of_type(:video)
+```
 
 Return the first video block in the content
 
@@ -86,7 +90,9 @@ end
 
 Call your method on the ST content
 
-``@item.content.your_custom_method``
+```ruby
+@item.content.your_custom_method
+```
 
 ## Generators: Blocks
 
