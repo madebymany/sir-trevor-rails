@@ -21,7 +21,7 @@ Include Sir Trevor JS in your project following the instructions set out [here](
 Grab all of the default block type partials by running the following generator command:
 
 ```bash
-rails g sir_trevor:views
+rails g sir_trevor_rails:views
 ```
 
 This will copy all of the SirTrevor block partials into `app/views/sir_trevor/blocks/`
@@ -69,7 +69,7 @@ Return the first video block in the content
 Run the blocks generator to create templates for your custom blocks
 
 ```bash
-rails g sir_trevor:blocks my_custom_block
+rails g sir_trevor_rails:blocks my_custom_block
 ```
 
 This will generate an html file for rendering the block, a javascript file for the editor and a ruby block class.
