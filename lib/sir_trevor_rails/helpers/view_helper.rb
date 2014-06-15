@@ -11,7 +11,6 @@ module SirTrevorRails
         markdown = Redcarpet::Markdown.new(CustomMarkdownFormatter)
         markdown.render(text).html_safe
       end
-
     end
   end
 end

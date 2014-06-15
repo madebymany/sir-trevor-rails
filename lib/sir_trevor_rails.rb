@@ -1,5 +1,12 @@
-require "sir_trevor_rails/version"
-require "sir_trevor_rails/engine"
+# Require things from Rails
+require 'rails/engine'
+require 'action_view'
+require 'action_view/template/resolver'
+
+require 'multi_json'
+
+require 'sir_trevor_rails/version'
+require 'sir_trevor_rails/engine'
 require 'sir_trevor_rails/has_sir_trevor_content'
 require 'sir_trevor_rails/view_resolver'
 

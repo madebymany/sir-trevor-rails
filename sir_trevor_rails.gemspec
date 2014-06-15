@@ -20,7 +20,13 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.4"
   spec.add_development_dependency "rake"
+  spec.add_development_dependency "minitest", "~> 5.3"
+  spec.add_development_dependency "wrong"
+  spec.add_development_dependency "pry-rails"
+  spec.add_development_dependency "combustion"
+  spec.add_development_dependency "sqlite3"
 
+  spec.add_dependency "rails"
   spec.add_dependency "redcarpet", "~> 2.0.1"
   spec.add_dependency "twitter-text", "~> 1.4"
 

@@ -6,7 +6,6 @@ module SirTrevorRails
     extend ActiveSupport::Concern
 
     module ClassMethods
-
       def sir_trevor_content(*attributes)
         attributes.each do |attribute|
           #next unless name.constantize.column_names.include? attribute.to_s
@@ -15,7 +14,6 @@ module SirTrevorRails
       end
 
       private
-
       def define_attribute_reader(attribute)
         define_method attribute do
           content = read_attribute(attribute)
@@ -24,7 +22,6 @@ module SirTrevorRails
             instance_variable_set("@#{attribute}", SirTrevorRails::BlockArray.from_json(content, self))
         end
       end
-
     end
   end
 end

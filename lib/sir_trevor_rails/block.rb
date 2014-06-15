@@ -28,7 +28,6 @@ module SirTrevorRails
     # Safe lookup that tries to identify user created block class.
     #
     # @param [Symbol] type
-
     def self.block_class(type)
       block_name = "#{type.to_s.camelize}Block"
       begin
@@ -44,7 +43,6 @@ module SirTrevorRails
     # If no block is found, create one with given name and inherit from Block class
     #
     # @param [Constant] block_name
-
     def self.block_class!(block_name)
       begin
         SirTrevorRails::Blocks.const_get(block_name)

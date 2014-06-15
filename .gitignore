@@ -1,2 +1,4 @@
 *.gem
 .DS_Store
+Gemfile.lock
+spec/internal/db/combustion_test.sqlite
