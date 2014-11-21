@@ -11,6 +11,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Andrew Sprinz", "Chris Bell"]
   s.email       = 'chris@madebymany.com'
   s.homepage    = 'https://github.com/madebymany/sir-trevor-rails'
+  
+  s.license = 'MIT'
 
   s.rubyforge_project         = "sir-trevor-rails"
   s.required_rubygems_version = "> 1.3.6"
