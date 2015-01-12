@@ -26,6 +26,10 @@ rails g sir_trevor:views
 
 This will copy all of the SirTrevor block partials into `app/views/sir-trevor/blocks/`
 
+# Handling image uploads
+
+We don't provide a default image uploader out of the box, because everyone will have different requirements. Until we provide a full example project, have a look at [this gist](https://gist.github.com/cjbell/7091537) which allows uploads using CarrierWave and Fog (for S3). 
+
 # Helper methods
 
 **`render_sir_trevor`**
