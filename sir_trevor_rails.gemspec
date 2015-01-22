@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "sqlite3"
 
   spec.add_dependency "rails"
-  spec.add_dependency "redcarpet", "~> 2.0.1"
+  spec.add_dependency "redcarpet", ">= 2.0.1", "< 4"
   spec.add_dependency "twitter-text", "~> 1.4"
 
 end
