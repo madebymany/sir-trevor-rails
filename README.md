@@ -31,7 +31,7 @@ Include Sir Trevor JS in your project following the instructions set out [here](
 Grab all of the default block type partials by running the following generator command:
 
 ```bash
-rails g sir_trevor_rails:views
+rails g sir_trevor:views
 ```
 
 This will copy all of the SirTrevor block partials into `app/views/sir_trevor/blocks/`
