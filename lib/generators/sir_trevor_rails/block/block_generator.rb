@@ -14,7 +14,7 @@ module SirTrevorRails
         copy_file "_block.js", "app/assets/javascripts/sir_trevor/blocks/#{name}.js"
 
         gsub_file "app/assets/javascripts/sir_trevor/blocks/#{name}.js", /SirTrevor\.Blocks\.Example/, "SirTrevor.Blocks.#{name.capitalize}"
-        gsub_file "app/assets/javascripts/sir_trevor/blocks/#{name}.js", /return "Example"/, "return: '#{name.capitalize}'"
+        gsub_file "app/assets/javascripts/sir_trevor/blocks/#{name}.js", /return "Example"/, "return '#{name.capitalize}'"
         gsub_file "app/assets/javascripts/sir_trevor/blocks/#{name}.js", /type: 'example'/, "type: '#{name.downcase}'"
 
         # Copy the HTML
@@ -24,7 +24,7 @@ module SirTrevorRails
 
         # Copy the BlockDecorator
         copy_file "_block.rb", "app/sir_trevor_blocks/#{name}_block.rb"
-        gsub_file "app/sir_trevor_blocks/#{name}_block.rb", /ExampleBlock/, " #{name}Block"
+        gsub_file "app/sir_trevor_blocks/#{name}_block.rb", /ExampleBlock/, " #{name.capitalize}Block"
 
       end
 
