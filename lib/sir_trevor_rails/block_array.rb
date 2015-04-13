@@ -1,11 +1,19 @@
 module SirTrevorRails
   class BlockArray < Array
 
-    def self.from_json(str, parent = nil)
-      blocks = MultiJson.load(str, symbolize_keys: true)
-      blocks = blocks[:data] if blocks.is_a?(Hash)
-      blocks.map! { |block_obj| SirTrevorRails::Block.from_hash(block_obj, parent) }
-      new blocks
+    def self.from_json(blocks, parent = nil)
+      if blocks.is_a?(String)
+        blocks = MultiJson.load(blocks, symbolize_keys: true)
+      end
+
+      if blocks.is_a?(Hash)
+        blocks = blocks[:data] || blocks['data'] or
+          raise IndexError, "No block data found"
+      end
+
+      new blocks.map { |obj|
+        SirTrevorRails::Block.from_hash(obj.deep_symbolize_keys, parent)
+      }
     end
 
     def has_block_of_type?(type)

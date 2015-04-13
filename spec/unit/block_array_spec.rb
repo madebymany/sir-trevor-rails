@@ -19,6 +19,26 @@ module SirTrevorRails
         expect { array.is_a? BlockArray }
         expect { array.size == 2 }
       end
+
+      it 'can be initialized with a hash' do
+        ar = subject.from_json({'data' => [{'type' => 'text',
+                                            'data' => {'text' => 'asdf'}},
+                                           {'type' => 'image'}]})
+        expect { ar.is_a? BlockArray }
+        expect { ar.first.type == :text }
+        expect { ar.first.text == 'asdf' }
+        expect { ar.last.type == :image }
+      end
+
+      it 'can be initialized with an array' do
+        ar = subject.from_json([{'type' => 'text',
+                                 'data' => {'text' => 'asdf'}},
+                                {'type' => 'image'}])
+        expect { ar.is_a? BlockArray }
+        expect { ar.first.type == :text }
+        expect { ar.first.text == 'asdf' }
+        expect { ar.last.type == :image }
+      end
     end
 
     describe 'instance methods' do
