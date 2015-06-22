@@ -1,7 +1,13 @@
 <div class="st__content-block st__content-block--quote">
   <div class="quote">
     <div class="quote__content">
-    	<%= sir_trevor_markdown quote_block.text %>
+      <% if quote_block.format == :html %>
+        <blockquote>
+          <%= sir_trevor_format quote_block.text, format: quote_block.format %>
+        </blockquote>
+      <% else %>
+        <%= sir_trevor_markdown quote_block.text %>
+      <% end %>
     </div>
 
     <% if quote_block.cite.present? %>

@@ -1,0 +1,7 @@
+{
+  "type": "text",
+  "data": {
+    "text": "One <i>two</i> <b>three</b> <a href='http://example.com'>four</a>",
+    "format": "html"
+  }
+}

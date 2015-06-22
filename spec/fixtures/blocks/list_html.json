@@ -1,0 +1,10 @@
+{
+  "type": "list",
+  "data": {
+    "listItems": [
+      { "content": "List Item 1" },
+      { "content": "<b>List Item 2</b>" }
+    ],
+    "format": "html"
+  }
+}
