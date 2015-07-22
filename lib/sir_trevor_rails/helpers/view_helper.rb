@@ -19,11 +19,11 @@ module SirTrevorRails
       end
 
       def sir_trevor_markdown(text)
-        Redcarpet::Render::HTML.new(hard_wrap: true, filter_html: true,
+        rndr = CustomMarkdownFormatter.new(hard_wrap: true, filter_html: true,
                                     autolink: true, no_intraemphasis: true,
                                     fenced_code: true)
 
-        markdown = Redcarpet::Markdown.new(CustomMarkdownFormatter)
+        markdown = Redcarpet::Markdown.new(rndr)
         markdown.render(text).html_safe
       end
 
