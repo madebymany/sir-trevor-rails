@@ -4,6 +4,6 @@
     <%= tweet_block.render_tweet_body %>
   </p>
   <cite>From <%= link_to tweet_block.at_name, tweet_block.profile_url %> on Twitter:</cite>
-  <time datetime="<%= tweet_block.created_at %>">(<%= link_to Time.parse(tweet_block.created_at), tweet_block.status_url %>)</time>
+  <time datetime="<%= tweet_block.created_at %>">(<%= link_to Time.zone.parse(tweet_block.created_at), tweet_block.status_url %>)</time>
 </div>
 

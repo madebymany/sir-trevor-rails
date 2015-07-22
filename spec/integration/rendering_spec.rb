@@ -103,10 +103,10 @@ class RenderingSpec < ActionDispatch::IntegrationTest
       expect { find_block(:tweet).all('a')[1].text == "@SachseInTheCity" }
 
       expect { find_block(:tweet).find('time')[:datetime] == "Tue Jun 30 11:38:31 +0000 2015" }
-      expect { find_block(:tweet).find('time').text == "(2015-06-30 12:38:31 +0100)" }
+      expect { find_block(:tweet).find('time').text == "(#{Time.zone.parse("Tue Jun 30 11:38:31 +0000 2015")})" }
 
       expect { find_block(:tweet).all('a')[2][:href] == "https://twitter.com/SachseInTheCity/status/615846875078504448" }
-      expect { find_block(:tweet).all('a')[2].text == "2015-06-30 12:38:31 +0100" }
+      expect { find_block(:tweet).all('a')[2].text == Time.zone.parse("Tue Jun 30 11:38:31 +0000 2015").to_s }
     end
   end
 

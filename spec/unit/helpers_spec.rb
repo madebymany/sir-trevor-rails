@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module SirTrevorRails
   describe Helpers do
-    let(:subject) { Class.new.include(Helpers::ViewHelper).new }
+    let(:subject) { Class.new.send(:include, Helpers::ViewHelper).new }
 
     describe 'sir_trevor_format' do
       it 'is callable' do
