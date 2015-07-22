@@ -1,0 +1,8 @@
+{
+  "type": "quote",
+  "data": {
+    "text": "This is quoted text",
+    "cite": "Author",
+    "format": "html"
+  }
+}

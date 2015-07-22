@@ -16,6 +16,10 @@ module SirTrevorRails
       }
     end
 
+    def to_s
+      {data: as_json}.to_json
+    end
+
     def has_block_of_type?(type)
       klass = Block.block_class(type)
       any? { |b| b.is_a? klass }

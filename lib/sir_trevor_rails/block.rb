@@ -2,24 +2,35 @@ require 'ostruct'
 
 module SirTrevorRails
   class Block < OpenStruct
+    DEFAULT_FORMAT = :markdown
 
     def self.from_hash(hash, parent)
-      hash = hash.deep_dup
+      hash = hash.deep_dup.with_indifferent_access
       self.type_klass(hash).new(hash, parent)
     end
 
+    def format
+      send(:[], :format).present? ? send(:[], :format).to_sym : DEFAULT_FORMAT
+    end
+
     def initialize(hash, parent)
-      @as_json = hash
+      @raw_data = hash
       @parent  = parent
       @type    = hash[:type].to_sym
-
       super(hash[:data])
     end
 
-    attr_reader :parent, :type, :as_json
+    attr_reader :parent, :type
 
     def to_partial_path
       "sir_trevor/blocks/" << self.class.name.demodulize.underscore
+    end
+
+    def as_json(*attrs)
+      {
+        type: @type.to_s,
+        data: marshal_dump
+      }
     end
 
     private
@@ -58,6 +69,5 @@ module SirTrevorRails
         self
       end
     end
-
   end
 end

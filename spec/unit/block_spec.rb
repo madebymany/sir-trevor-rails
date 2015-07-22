@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module SirTrevorRails
+class BlockSpec < ActiveSupport::TestCase
   describe Block do
     describe '.block_class' do
       subject { Block }
@@ -46,11 +46,17 @@ module SirTrevorRails
     end
 
     describe 'JSON representation' do
-      let(:source_hash) { { type: 'test', data: {} } }
-      let(:block) { Block.from_hash(source_hash, nil) }
+      let(:empty_source_hash) { { type: 'test', data: {} } }
+      let(:empty_block) { Block.from_hash(empty_source_hash, nil) }
+      let(:data_source_hash) { { type: 'test', data: { one: 2, three: 4 } } }
+      let(:data_block) { Block.from_hash(data_source_hash, nil) }
 
       it 'returns source hash when #as_json is called' do
-        expect { block.as_json == source_hash }
+        expect { empty_block.as_json == empty_source_hash }
+      end
+
+      it 'serializes block data' do
+        expect { data_block.as_json == data_source_hash }
       end
     end
 

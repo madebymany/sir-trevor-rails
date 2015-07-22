@@ -1,0 +1,6 @@
+{
+  "type": "text",
+  "data": {
+    "text": "One _two_ **three** [four](http://example.com)"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type":"tweet",
+  "data":{
+    "user":{
+      "profile_image_url":"http://pbs.twimg.com/profile_images/613336689893896192/5nQjxG2o_normal.jpg",
+      "profile_image_url_https":"https://pbs.twimg.com/profile_images/613336689893896192/5nQjxG2o_normal.jpg",
+      "screen_name":"SachseInTheCity",
+      "name":"Nelson Sachse"
+    },
+    "id":"615846875078504448",
+    "text":"There's no pain without some gain !\n\nlet's run \\o/",
+    "created_at":"Tue Jun 30 11:38:31 +0000 2015",
+    "entities":{
+      "hashtags":[],
+      "symbols":[],
+      "user_mentions":[],
+      "urls":[]
+    },
+    "status_url":"https://twitter.com/SachseInTheCity/status/615846875078504448"
+  }
+}

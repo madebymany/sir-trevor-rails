@@ -1,0 +1,26 @@
+{
+  "type":"image",
+  "data":{
+    "id":1,
+    "updated_at":"2015-01-01T01:00:00+01:00",
+    "created_at":"2015-01-01T01:00:00+01:00",
+    "file":{
+      "url":"http://placeimg.com/1000/600/any",
+      "thumb":{
+        "url":"http://placeimg.com/100/100/any"
+      },
+      "large":{
+        "url":"http://placeimg.com/800/400/any"
+      },
+      "xlarge":{
+        "url":"http://placeimg.com/1000/600/any"
+      },
+      "medium":{
+        "url":"http://placeimg.com/600/300/any"
+      },
+      "mobile":{
+        "url":"http://placeimg.com/800/400/any"
+      }
+    }
+  }
+}
