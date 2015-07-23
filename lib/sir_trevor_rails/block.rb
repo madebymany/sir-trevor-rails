@@ -10,7 +10,7 @@ module SirTrevorRails
     end
 
     def format
-      send(:[], :format).present? ? send(:[], :format).to_sym : DEFAULT_FORMAT
+      send(:[], :isHtml).present? ? :html : DEFAULT_FORMAT
     end
 
     def initialize(hash, parent)
