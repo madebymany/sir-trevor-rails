@@ -25,9 +25,11 @@ module SirTrevorRails
         "@" << screen_name
       end
 
-      def profile_image_url(size="bigger")
-        "//twitter.com/api/users/profile_image/" << self.user[:screen_name] <<
-          "?size=" << size
+      def profile_image_url
+        # TODO: add support for different size images: https://dev.twitter.com/overview/general/user-profile-images-and-banners
+
+        # Split the URL to omit the protocol and let the browser define the context (note: assumes asset is available over both HTTP and HTTPS) 
+        "//" << self.user[:profile_image_url].split("://")[1]
       end
 
     end
