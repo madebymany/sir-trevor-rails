@@ -93,7 +93,7 @@ class RenderingSpec < ActionDispatch::IntegrationTest
     it 'renders correctly' do
       create_and_visit(blocks_json(:tweet))
       expect { find_block(:tweet).all('a')[0][:href] == "//twitter.com/SachseInTheCity" }
-      expect { find_block(:tweet).find('img')[:src] == "//twitter.com/api/users/profile_image/SachseInTheCity?size=bigger" }
+      expect { find_block(:tweet).find('img')[:src] == "//pbs.twimg.com/profile_images/613336689893896192/5nQjxG2o_normal.jpg" }
 
       expect { find_block(:tweet).find('p').text == "There's no pain without some gain ! let's run \\o/" }
 
