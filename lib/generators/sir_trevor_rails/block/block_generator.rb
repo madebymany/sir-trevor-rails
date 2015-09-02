@@ -11,23 +11,28 @@ module SirTrevorRails
       def create_block
 
         # Copy the JS
-        copy_file "_block.js", "app/assets/javascripts/sir_trevor/blocks/#{name}.js"
-
-        gsub_file "app/assets/javascripts/sir_trevor/blocks/#{name}.js", /SirTrevor\.Blocks\.Example/, "SirTrevor.Blocks.#{name.capitalize}"
-        gsub_file "app/assets/javascripts/sir_trevor/blocks/#{name}.js", /return "Example"/, "return '#{name.capitalize}'"
-        gsub_file "app/assets/javascripts/sir_trevor/blocks/#{name}.js", /type: 'example'/, "type: '#{name.downcase}'"
+        template "_block.js.erb", "app/assets/javascripts/sir_trevor/blocks/#{file_name}.js"
 
         # Copy the HTML
-        copy_file "_block.html.erb", "app/views/sir_trevor/blocks/_#{name}_block.html.erb"
-        gsub_file "app/views/sir_trevor/blocks/_#{name}_block.html.erb", /\s(-block)/, " #{name}-block"
-        gsub_file "app/views/sir_trevor/blocks/_#{name}_block.html.erb", /\s(_block)/, " #{name}_block"
+        template "_block.html.erb", "app/views/sir_trevor/blocks/_#{file_name}_block.html.erb"
 
         # Copy the BlockDecorator
-        copy_file "_block.rb", "app/sir_trevor_blocks/#{name}_block.rb"
-        gsub_file "app/sir_trevor_blocks/#{name}_block.rb", /ExampleBlock/, " #{name}Block"
-
+        template "_block.rb.erb", "app/sir_trevor_blocks/#{file_name}_block.rb"
       end
 
+      private
+
+      def file_name
+        name.underscore
+      end
+
+      def block_name
+        file_name.camelize
+      end
+
+      def css_class
+        file_name.dasherize
+      end
     end
   end
 end
