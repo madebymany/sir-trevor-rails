@@ -6,7 +6,7 @@ module SirTrevorRails
         blocks = MultiJson.load(blocks, symbolize_keys: true)
       end
 
-      if blocks.is_a?(Hash)
+      if blocks.is_a?(Hash) && blocks.keys.size > 0
         blocks = blocks[:data] || blocks['data'] or
           raise IndexError, "No block data found"
       end
