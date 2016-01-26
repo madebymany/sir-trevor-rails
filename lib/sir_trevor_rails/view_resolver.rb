@@ -5,8 +5,8 @@ module SirTrevorRails
       super("app/views")
     end
 
-    def find_templates(name, prefix, partial, details)
-      super(name, prefix.gsub(/^(.)+(sir_trevor)/, '\2'), partial, details)
+    def find_templates(name, prefix, *args)
+      super(name, prefix.gsub(/^(.)+(sir_trevor)/, '\2'), *args)
     end
 
   end
