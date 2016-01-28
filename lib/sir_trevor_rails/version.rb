@@ -1,3 +1,3 @@
 module SirTrevorRails
-  VERSION = "0.5.0b1"
+  VERSION = "0.5.0"
 end
