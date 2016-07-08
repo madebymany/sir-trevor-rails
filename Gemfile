@@ -5,4 +5,5 @@ gemspec
 
 if RUBY_VERSION < '2.2'
   gem 'rack', '< 2'
+  gem 'rails', '< 5'
 end
