@@ -17,7 +17,7 @@ Version 0.4.0 represents a major refactor and contains significant API changes.
 Add Sir Trevor to your Gemfile
 
 ```ruby
-gem 'sir_trevor_rails'
+gem 'sir-trevor-rails'
 ```
 
 ```bash
