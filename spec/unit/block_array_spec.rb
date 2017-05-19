@@ -2,7 +2,7 @@ require 'spec_helper'
 
 class BlockArraySpec < ActiveSupport::TestCase
   describe BlockArray do
-    describe 'intialization' do
+    describe 'initialization' do
       subject { BlockArray }
 
       it 'can be initialized with an empty JSON array' do
@@ -62,6 +62,25 @@ class BlockArraySpec < ActiveSupport::TestCase
 
         it 'returns nil if called with block type not in the array' do
           assert { subject.first_block_of_type(:nonexistent).nil? }
+        end
+      end
+
+      describe 'get_blocks_of_types' do
+        it 'returns all blocks of given types in the array' do
+          text_blocks = subject.get_blocks_of_types(:text)
+          text_blocks.each do |b| 
+            assert { b.type == :text }
+          end
+        end
+
+        it 'returns correct number of blocks of given types in the array' do
+          text_blocks = subject.get_blocks_of_types([:text, :list])
+          assert { text_blocks.size == 2 }
+        end
+
+        it 'returns empty array if called with block type not in the array' do
+          nonexistent_blocks = subject.get_blocks_of_types(:nonexistent)
+          assert { nonexistent_blocks.size == 0 }
         end
       end
 

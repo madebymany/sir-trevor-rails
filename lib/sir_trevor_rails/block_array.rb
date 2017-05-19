@@ -29,5 +29,10 @@ module SirTrevorRails
       klass = Block.block_class(type)
       detect { |b| b.is_a? klass }
     end
+
+    def get_blocks_of_types(types)
+      types = [types] unless types.is_a? Array
+      select { |b| types.include?(b.type) }
+    end
   end
 end
