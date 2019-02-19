@@ -13,6 +13,11 @@ module SirTrevorRails
       send(:[], :format).present? ? send(:[], :format).to_sym : DEFAULT_FORMAT
     end
 
+    # Sets a list of custom block types to speed up lookup at runtime.
+    def self.custom_block_types
+      []
+    end
+
     def initialize(hash, parent)
       @raw_data = hash
       @parent  = parent
@@ -40,10 +45,15 @@ module SirTrevorRails
     #
     # @param [Symbol] type
     def self.block_class(type)
-      block_name = "#{type.to_s.camelize}Block"
-      begin
-        block_name.constantize
-      rescue NameError
+      type_name = type.to_s.camelize
+      block_name = "#{type_name}Block"
+      if custom_block_types.include?(type_name)
+        begin
+          block_name.constantize
+        rescue NameError
+          block_class!(block_name)
+        end
+      else
         block_class!(block_name)
       end
     end

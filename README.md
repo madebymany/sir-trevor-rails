@@ -1,6 +1,23 @@
 # Sir Trevor Rails
 
-A Rails gem for integrating Sir Trevor JS into your Rails 3/4 application.
+A Rails gem for integrating Sir Trevor JS into your Rails 3/4/5 application.
+
+## Upgrade guide to v0.6.0
+
+There is a breaking change which needs to be applied if you've defined custom ruby blocks.
+
+Create an initializer ``config/initializers/sir_trevor_rails.rb``
+
+Add your custom block types in the initializer:
+
+```ruby
+class SirTrevorRails::Block
+  def self.custom_block_types
+    # Type should be string based and prefix of your class name.
+    ["Custom"] # Would relate to CustomBlock
+  end
+end
+```
 
 ## Upgrade guide from v0.4.0-rc.1
 
@@ -73,6 +90,22 @@ Does this content have an image block?
 ```
 
 Return the first video block in the content
+
+## Add custom block types with custom methods
+
+Create an initializer ``config/initializers/sir_trevor_rails.rb``
+
+Add your custom block types in the initializer:
+
+```ruby
+class SirTrevorRails::Block
+  def self.custom_block_types
+    # Type should be string based and prefix of your class name which would be for the following.
+    # TextBlock, HeadingBlock, CustomBlock
+    ["Text", "Heading", "Custom"]
+  end
+end
+```
 
 ## Add custom methods for block content
 
