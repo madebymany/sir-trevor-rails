@@ -6,4 +6,5 @@ gemspec
 if RUBY_VERSION < '2.2'
   gem 'rack', '< 2'
   gem 'rails', '< 5'
+  gem 'sqlite3', '~> 1.3.0'
 end
