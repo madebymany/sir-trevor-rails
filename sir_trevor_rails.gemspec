@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest", "~> 5.3"
   spec.add_development_dependency "wrong"
   spec.add_development_dependency "pry-rails"
-  spec.add_development_dependency "combustion"
+  spec.add_development_dependency "combustion", "~> 1.1"
   spec.add_development_dependency "sqlite3", ">= 1.3", "< 1.5"
   spec.add_development_dependency "capybara"
   spec.add_development_dependency "launchy"
