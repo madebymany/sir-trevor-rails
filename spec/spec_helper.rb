@@ -1,4 +1,8 @@
 require 'sir_trevor_rails'
+require 'bundler'
+
+Bundler.require :default, :development
+
 require 'combustion'
 
 Combustion.initialize! :active_record, :action_view do
