@@ -1,6 +1,6 @@
 # Sir Trevor Rails
 
-A Rails gem for integrating Sir Trevor JS into your Rails 3/4/5 application.
+A Rails gem for integrating Sir Trevor JS into your Rails 3/4/5/6 application.
 
 ## Upgrade guide to v0.6.0
 
@@ -143,8 +143,7 @@ Ruby block classes can be used like decorators for the block content. See the [t
 
 ## Requirements
 
-
-- Rails 3.x/4.x
+- Rails 3.x/4.x/5.x/6.x
 
 ## To do
 
