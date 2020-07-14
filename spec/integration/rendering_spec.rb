@@ -4,7 +4,7 @@ class RenderingSpec < ActionDispatch::IntegrationTest
   describe 'SirTrevorContent rendering' do
     it 'renders all blocks as separate divs' do
       post = Post.create(body: blocks_json(:list_html, :text_html))
-      visit post_path(post)
+      visit blog_post_path(post)
 
       expect { all('.st__content-block').length == 2 }
     end
@@ -112,7 +112,7 @@ class RenderingSpec < ActionDispatch::IntegrationTest
 
   def create_and_visit(json)
     post = Post.create(body: json)
-    visit post_path(post)
+    visit blog_post_path(post)
   end
 
   def find_block(type)
