@@ -15,7 +15,7 @@ module SirTrevorRails
       end
 
       def sir_trevor_html(text)
-        sanitize(text, tags: %w(b i a br p))
+        sanitize(text, tags: %w(b i a br p sup))
       end
 
       def sir_trevor_markdown(text)
