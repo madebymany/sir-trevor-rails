@@ -1,9 +1,17 @@
+v0.6.2:
+	date: 2020-10-20
+	changes:
+		- Allow superscript tags
+
 v0.6.1:
 	date: 2020-02-12
+	changes:
 		- Rails 6 support
+
 v0.6.0:
   date: 2019-02-19
-    - Added custom_block_types to improve block class lookup performance 
+	changes:
+	    - Added custom_block_types to improve block class lookup performance 
 
 v0.4.0:
 	date: 2014-05-20
