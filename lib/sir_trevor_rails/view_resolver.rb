@@ -9,5 +9,9 @@ module SirTrevorRails
       super(name, prefix.gsub(/^(.)+(sir_trevor)/, '\2'), *args)
     end
 
+    def _find_all(name, prefix, *args)
+      super(name, prefix.gsub(/^(.)+(sir_trevor)/, '\2'), *args)
+    end
+
   end
 end

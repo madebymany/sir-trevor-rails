@@ -1,4 +1,4 @@
-class PostsController < ActionController::Base
+class Blog::PostsController < ActionController::Base
   def new
     @post = Post.new
   end
