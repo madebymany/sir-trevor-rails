@@ -36,6 +36,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "rails", ">= 3", "< 7"
   spec.add_dependency "redcarpet", ">= 2.0.1", "< 4"
-  spec.add_dependency "twitter-text", "~> 1.4"
+  spec.add_dependency "twitter-text", "~> 2.1"
   spec.add_dependency 'multi_json', '~> 1.0'
 end
