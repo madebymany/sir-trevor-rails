@@ -7,7 +7,7 @@ module SirTrevorRails
       include ActionView::Helpers::SanitizeHelper
 
       def render_tweet_body
-        sanitize Twitter::TwitterText::Autolink.auto_link(
+        sanitize Twitter::Autolink.auto_link(
               self.text,
               url_entities: (self.entities.values_at(:urls, :media).flatten.compact.uniq rescue nil)
             ), tags: %w{a span}, attributes: %w{class href rel target}
