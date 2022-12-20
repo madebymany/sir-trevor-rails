@@ -7,7 +7,7 @@ module SirTrevorRails
       include ActionView::Helpers::SanitizeHelper
 
       def render_tweet_body
-        sanitize Twitter::Autolink.auto_link(
+        sanitize Twitter::TwitterText::Autolink.auto_link(
               self.text,
               url_entities: (self.entities.values_at(:urls, :media).flatten.compact.uniq rescue nil)
             ), tags: %w{a span}, attributes: %w{class href rel target}
@@ -28,7 +28,7 @@ module SirTrevorRails
       def profile_image_url
         # TODO: add support for different size images: https://dev.twitter.com/overview/general/user-profile-images-and-banners
 
-        # Split the URL to omit the protocol and let the browser define the context (note: assumes asset is available over both HTTP and HTTPS) 
+        # Split the URL to omit the protocol and let the browser define the context (note: assumes asset is available over both HTTP and HTTPS)
         "//" << self.user[:profile_image_url].split("://")[1]
       end
 

@@ -1,20 +1,34 @@
+v0.6.3:
+  date: 2022-03-29
+  changes:
+    - Update to twitter-text 2+
+    - Allow support for Rails 7
+
+v0.6.2:
+  date: 2020-10-20
+  changes:
+    - Allow superscript tags
+
 v0.6.1:
-	date: 2020-02-12
-		- Rails 6 support
+  date: 2020-02-12
+  changes:
+    - Rails 6 support
+
 v0.6.0:
   date: 2019-02-19
+  changes:
     - Added custom_block_types to improve block class lookup performance 
 
 v0.4.0:
-	date: 2014-05-20
-	changes:
-		- Renamed gem sir_trevor_rails (used to be sir-trevor-rails)
-		- Removed sir trevor JS and all its dependencies (should install files manually or from bower from now on)
-		- Removed all the view helpers appart from sir_trevor_markdown (render_sir_trevor, render_sir_trevor_block, render_sir_trevor_image, sir_trevor_image_tag, parse_sir_trevor are all gone)
-		- Removed the form helper (no more sir_trevor_text_area)
-		- Added has_sir_trevor_content.rb as a concern for models with ST content 
-		- Remove jQuery rails dependency
-		- Use view resolvers and to_partial_path to render ST content (instead of the view helper)
-		- Add block array class
-		- Add block classes
-		- Add lookup methods on the block array
+  date: 2014-05-20
+  changes:
+    - Renamed gem sir_trevor_rails (used to be sir-trevor-rails)
+    - Removed sir trevor JS and all its dependencies (should install files manually or from bower from now on)
+    - Removed all the view helpers appart from sir_trevor_markdown (render_sir_trevor, render_sir_trevor_block, render_sir_trevor_image, sir_trevor_image_tag, parse_sir_trevor are all gone)
+    - Removed the form helper (no more sir_trevor_text_area)
+    - Added has_sir_trevor_content.rb as a concern for models with ST content
+    - Remove jQuery rails dependency
+    - Use view resolvers and to_partial_path to render ST content (instead of the view helper)
+    - Add block array class
+    - Add block classes
+    - Add lookup methods on the block array
