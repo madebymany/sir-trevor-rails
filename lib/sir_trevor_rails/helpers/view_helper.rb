@@ -18,10 +18,16 @@ module SirTrevorRails
         sanitize(text, tags: %w(b i a br p sup))
       end
 
-      def sir_trevor_markdown(text)
-        rndr = CustomMarkdownFormatter.new(hard_wrap: true, filter_html: true,
-                                    autolink: true, no_intraemphasis: true,
-                                    fenced_code: true)
+      DEFAULT_EXTENSIONS = {
+        hard_wrap: true,
+        filter_html: true,
+        autolink: true,
+        no_intraemphasis: true,
+        fenced_code: true
+      }
+
+      def sir_trevor_markdown(text, options = {})
+        rndr = CustomMarkdownFormatter.new(DEFAULT_EXTENSIONS.merge(options))
 
         markdown = Redcarpet::Markdown.new(rndr)
         markdown.render(text).html_safe
