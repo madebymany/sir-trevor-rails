@@ -3,7 +3,7 @@ module SirTrevorRails
 
     require 'redcarpet'
 
-    config.after_initialize do |app|
+    initializer "sir_trevor_rails.paths" do |app|
       app.config.paths.add 'app/sir_trevor_blocks', eager_load: true
     end
 

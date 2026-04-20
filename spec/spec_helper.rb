@@ -14,13 +14,30 @@ require 'capybara/rails'
 require 'minitest/autorun'
 require 'minitest/spec'
 require 'minitest/pride'
-require 'wrong/adapters/minitest'
+require 'wrong/assert'
+require 'wrong/helpers'
 require 'pry'
-
 
 Wrong.config.alias_assert :expect, override: true
 
-MiniTest::Spec.class_eval do
+# Patch Wrong::Assert in-place to work with modern Minitest:
+# - failure_class: MiniTest::Assertion → Minitest::Assertion
+# - increment_assertion_count: _assertions was renamed to assertions in Minitest 5.27
+Wrong::Assert.module_eval do
+  def failure_class
+    Minitest::Assertion
+  end
+
+  def increment_assertion_count
+    if respond_to?(:assertions)
+      self.assertions += 1
+    elsif respond_to?(:_assertions)
+      self._assertions += 1
+    end
+  end
+end
+
+Minitest::Spec.class_eval do
   include Wrong::Assert
   include Wrong::Helpers
 end
@@ -47,7 +64,7 @@ module SirTrevorRails::Fixtures
 end
 
 class ActiveSupport::TestCase
-  extend MiniTest::Spec::DSL
+  extend Minitest::Spec::DSL
   include Wrong::Assert
   include Wrong::Helpers
 
