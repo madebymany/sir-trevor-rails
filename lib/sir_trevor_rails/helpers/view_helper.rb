@@ -24,11 +24,15 @@ module SirTrevorRails
                                     fenced_code: true)
 
         markdown = Redcarpet::Markdown.new(rndr)
-        markdown.render(text).html_safe
+        sanitize(markdown.render(text))
       end
 
       def without_p_wrap(html)
-        Regexp.new('^<p>(.*)<\/p>$').match(html)[1].html_safe rescue html
+        stripped = html.to_s.strip
+        return html unless stripped.start_with?('<p>') && stripped.end_with?('</p>')
+        inner = stripped[3..-5]
+        return html if inner.include?('<p>')
+        sanitize(inner)
       end
     end
   end

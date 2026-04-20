@@ -20,7 +20,7 @@ class PostsController < ActionController::Base
   def update
     @post = Post.find(params[:id])
 
-    if @post.update_attributes(post_attributes)
+    if @post.update(post_attributes)
       redirect_to post_show_path(@post)
     else
       render :edit

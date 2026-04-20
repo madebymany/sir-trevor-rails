@@ -2,7 +2,18 @@
 
 # Sir Trevor Rails
 
-A Rails gem for integrating Sir Trevor JS into your Rails >=3, <=8 application.
+A Rails gem for integrating Sir Trevor JS into your Rails application.
+
+## What's new in v0.7
+
+- **Rails 8 support** — verified via CI across Rails 5.2 through 8.0.
+- **Minimum Rails is now 5.2** — apps on Rails 4 or earlier should stay on v0.6.3.
+- **Minimum Ruby is now 2.7.**
+- **Security hardening** — `sir_trevor_markdown` output now passes through Rails' `sanitize` helper. If your content uses tags beyond the standard Markdown set (e.g. `<sup>`), extend the allowlist in an initializer:
+  ```ruby
+  Rails.application.config.action_view.sanitized_allowed_tags = Rails.application.config.action_view.sanitized_allowed_tags.to_a + ['sup']
+  ```
+- **Upgrade note** — if you relied on arbitrary HTML passing through `sir_trevor_markdown` unfiltered, review your block templates after upgrading. See the [CHANGELOG](CHANGELOG.md) for full details.
 
 ## Upgrade guide to v0.6.0
 
