@@ -1,3 +1,4 @@
+require 'logger'
 require 'sir_trevor_rails'
 require 'bundler'
 
