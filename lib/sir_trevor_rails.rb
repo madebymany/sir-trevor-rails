@@ -1,4 +1,5 @@
 # Require things from Rails
+require 'active_support/core_ext/module/delegation'
 require 'rails/engine'
 require 'action_view'
 require 'action_view/template/resolver'
