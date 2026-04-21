@@ -41,8 +41,8 @@ class BlockArraySpec < ActiveSupport::TestCase
 
       describe 'has_block_of_type?' do
         it 'can be called with nonexistent block type' do
-          # no assert needed, if anything was wrong it would raise an exception
           subject.has_block_of_type? :nonexistent
+          pass
         end
 
         it 'returns true if block exists in the array' do
