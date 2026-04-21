@@ -4,7 +4,8 @@
 
 ## v0.7.0 — 2026-04-20
 
-- Rails 8 compatibility verified via CI matrix (Rails 5.2 through 8.0)
+- Rails 8.1 support added
+- Rails 8 compatibility verified via CI matrix (Rails 5.2 through 8.1)
 - Supported Rails range narrowed to 5.2–8.0 (previously an unverified claim of Rails 3+)
 - CI migrated from Travis to GitHub Actions with Appraisal
 - Ruby minimum raised to 2.7
